@@ -30,6 +30,8 @@ const translations = {
     'hero.placeholder': 'Restaurant Name',
     'hero.button': 'Get Access Now',
     'hero.guarantee': 'Unlimited orders. Zero commissions.',
+    'hero.revenueIncrease': 'Revenue Increase',
+    'hero.extraRevenue': 'Extra Revenue',
     
     // Revenue Section
     'revenue.title': 'Turn people visiting your website into regular food clients',
@@ -40,6 +42,11 @@ const translations = {
     'revenue.zeroCommissionsDesc': 'Keep 100% of your revenue. No hidden fees, no monthly charges, no commissions.',
     'revenue.salesGrowth': '162% Sales Growth',
     'revenue.salesGrowthDesc': 'Restaurants using our system see an average 162% increase in online sales',
+    'revenue.seeResults': 'See the Results in Action',
+    'revenue.seeResultsDesc': 'Watch how our AI-powered system transforms your digital menu into a revenue-generating machine.',
+    'revenue.realtimeUpselling': 'Real-time upselling suggestions',
+    'revenue.smartPromotions': 'Smart promotional displays',
+    'revenue.automatedBundles': 'Automated bundle recommendations',
     
     // Features Section
     'features.title': 'Smart Upselling Features That Generate More Revenue',
@@ -59,6 +66,9 @@ const translations = {
     'features.mobile': 'Mobile-optimized design',
     'features.growth': '162% sales growth guaranteed',
     'features.preview': 'Live Preview: Your customers can browse your menu, place orders, and pay online - all from your professional website.',
+    'features.yourWebsite': 'Your Restaurant Website',
+    'features.completeOrdering': 'Complete with online ordering',
+    'features.livePreview': 'Live Preview',
     
     // Benefits Section
     'benefits.title': 'Why 2,500+ Restaurants Choose OishiMenu',
@@ -138,7 +148,9 @@ const translations = {
     'hero.placeholder': 'Tên nhà hàng',
     'hero.button': 'Truy cập ngay',
     'hero.guarantee': 'Đơn hàng không giới hạn. Không hoa hồng.',
-    
+    'hero.revenueIncrease': 'Tăng Doanh Thu',
+    'hero.extraRevenue': 'Doanh Thu Thêm',
+
     // Revenue Section
     'revenue.title': 'Biến người truy cập website thành khách hàng thường xuyên',
     'revenue.subtitle': 'Hệ thống thực đơn tăng doanh thu của chúng tôi sẽ giúp bạn biến website thành cỗ máy kiếm tiền.',
@@ -148,7 +160,12 @@ const translations = {
     'revenue.zeroCommissionsDesc': 'Giữ 100% doanh thu. Không phí ẩn, không phí hàng tháng, không hoa hồng.',
     'revenue.salesGrowth': 'Tăng Trưởng 162%',
     'revenue.salesGrowthDesc': 'Các nhà hàng sử dụng hệ thống của chúng tôi thấy tăng trưởng bán hàng trực tuyến trung bình 162%',
-    
+    'revenue.seeResults': 'Xem Kết Quả Thực Tế',
+    'revenue.seeResultsDesc': 'Xem cách hệ thống AI của chúng tôi biến thực đơn kỹ thuật số thành cỗ máy tạo doanh thu.',
+    'revenue.realtimeUpselling': 'Gợi ý bán chéo theo thời gian thực',
+    'revenue.smartPromotions': 'Hiển thị khuyến mãi thông minh',
+    'revenue.automatedBundles': 'Gợi ý combo tự động',
+
     // Features Section
     'features.title': 'Tính Năng Bán Chéo Thông Minh Tạo Thêm Doanh Thu',
     'features.subtitle': 'Biến thực đơn kỹ thuật số thành cỗ máy kiếm tiền với hệ thống bán chéo thông minh.',
@@ -167,7 +184,10 @@ const translations = {
     'features.mobile': 'Thiết kế tối ưu di động',
     'features.growth': 'Đảm bảo tăng trưởng 162%',
     'features.preview': 'Xem trước trực tiếp: Khách hàng có thể duyệt thực đơn, đặt hàng và thanh toán trực tuyến - tất cả từ website chuyên nghiệp của bạn.',
-    
+    'features.yourWebsite': 'Website Nhà Hàng Của Bạn',
+    'features.completeOrdering': 'Hoàn chỉnh với đặt hàng trực tuyến',
+    'features.livePreview': 'Xem Trước Trực Tiếp',
+
     // Benefits Section
     'benefits.title': 'Tại Sao 2,500+ Nhà Hàng Chọn OishiMenu',
     'benefits.subtitle': 'Cách dễ nhất để tăng doanh thu nhà hàng với rủi ro bằng không',

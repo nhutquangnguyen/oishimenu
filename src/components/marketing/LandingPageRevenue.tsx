@@ -57,23 +57,23 @@ export function LandingPageRevenue() {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                See the Results in Action
+                {t('revenue.seeResults')}
               </h3>
               <p className="text-lg text-gray-600 mb-6">
-                Watch how our AI-powered system transforms your digital menu into a revenue-generating machine.
+                {t('revenue.seeResultsDesc')}
               </p>
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-gray-700">Real-time upselling suggestions</span>
+                  <span className="text-gray-700">{t('revenue.realtimeUpselling')}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-gray-700">Smart promotional displays</span>
+                  <span className="text-gray-700">{t('revenue.smartPromotions')}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                  <span className="text-gray-700">Automated bundle recommendations</span>
+                  <span className="text-gray-700">{t('revenue.automatedBundles')}</span>
                 </div>
               </div>
             </div>

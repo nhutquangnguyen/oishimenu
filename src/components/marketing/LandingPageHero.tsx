@@ -24,30 +24,30 @@ export function LandingPageHero() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               {t('hero.title')}
               <br />
               <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">{t('hero.titleHighlight')}</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto lg:mx-0">
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-3xl mx-auto lg:mx-0">
               {t('hero.subtitle')}
               <br />
-              <span className="text-lg font-semibold text-green-600">{t('hero.benefits')}</span>
+              <span className="text-base sm:text-lg font-semibold text-green-600">{t('hero.benefits')}</span>
             </p>
-            
+
             {/* Business Name Input */}
-            <div className="max-w-md mx-auto lg:mx-0 mb-8">
-              <div className="flex gap-2">
+            <div className="max-w-lg mx-auto lg:mx-0 mb-8">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Input
                   type="text"
                   placeholder={t('hero.placeholder')}
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  className="text-lg py-6 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                  className="text-base sm:text-lg py-4 sm:py-6 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
                 />
-                <Button 
+                <Button
                   onClick={handleGetStarted}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap"
                 >
                   {t('hero.button')}
                 </Button>
@@ -60,8 +60,8 @@ export function LandingPageHero() {
           </div>
           
           {/* Hero Image */}
-          <div className="relative">
-            <div className="relative w-full h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+          <div className="relative mt-8 lg:mt-0">
+            <div className="relative w-full h-64 sm:h-80 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
               <Image
                 src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
                 alt="Restaurant with digital menu"
@@ -71,14 +71,14 @@ export function LandingPageHero() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
-            {/* Floating stats */}
-            <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
-              <div className="text-2xl font-bold text-green-600">+35%</div>
-              <div className="text-sm text-gray-600">Revenue Increase</div>
+            {/* Floating stats - Hidden on very small screens */}
+            <div className="hidden sm:block absolute -bottom-4 sm:-bottom-6 -left-4 sm:-left-6 bg-white rounded-xl p-3 sm:p-4 shadow-xl">
+              <div className="text-lg sm:text-2xl font-bold text-green-600">+35%</div>
+              <div className="text-xs sm:text-sm text-gray-600">{t('hero.revenueIncrease')}</div>
             </div>
-            <div className="absolute -top-6 -right-6 bg-white rounded-xl p-4 shadow-xl">
-              <div className="text-2xl font-bold text-blue-600">$2,400</div>
-              <div className="text-sm text-gray-600">Extra Revenue</div>
+            <div className="hidden sm:block absolute -top-4 sm:-top-6 -right-4 sm:-right-6 bg-white rounded-xl p-3 sm:p-4 shadow-xl">
+              <div className="text-lg sm:text-2xl font-bold text-blue-600">$2,400</div>
+              <div className="text-xs sm:text-sm text-gray-600">{t('hero.extraRevenue')}</div>
             </div>
           </div>
         </div>

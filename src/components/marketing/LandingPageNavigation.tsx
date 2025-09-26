@@ -30,7 +30,7 @@ export function LandingPageNavigation() {
             <Link href="#testimonials" className="text-gray-600 hover:text-gray-900">{t('nav.testimonials')}</Link>
           </div>
           
-          <div className="flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4">
             <LanguageSwitcher />
             <Link href="/auth/signin">
               <Button variant="ghost" className="text-gray-600 hover:text-gray-900">{t('nav.logIn')}</Button>
@@ -48,6 +48,59 @@ export function LandingPageNavigation() {
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+              <Link
+                href="#features"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('nav.features')}
+              </Link>
+              <Link
+                href="#how-it-works"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('nav.howItWorks')}
+              </Link>
+              <Link
+                href="#pricing"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('nav.pricing')}
+              </Link>
+              <Link
+                href="#testimonials"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('nav.testimonials')}
+              </Link>
+              <div className="border-t border-gray-200 pt-4 pb-3">
+                <div className="flex items-center px-3 space-y-3 flex-col">
+                  <div className="w-full flex justify-center mb-3">
+                    <LanguageSwitcher />
+                  </div>
+                  <Link href="/auth/signin" className="w-full">
+                    <Button variant="ghost" className="w-full text-gray-600 hover:text-gray-900">
+                      {t('nav.logIn')}
+                    </Button>
+                  </Link>
+                  <Link href="/auth/signup" className="w-full">
+                    <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
+                      {t('nav.getAccess')}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
