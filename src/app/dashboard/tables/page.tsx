@@ -1,13 +1,18 @@
+'use client';
+
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { PageContent } from '@/components/shared/PageContent';
 import { TablesManagerRefactored } from '@/components/tables/TablesManagerRefactored';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function TablesPage() {
+  const { t } = useLanguage();
+
   return (
     <DashboardLayout>
       <PageContent
-        title="Tables"
-        description="Manage your restaurant tables and generate QR codes for contactless ordering."
+        title={t('tables.title')}
+        description={t('tables.description')}
       >
         <TablesManagerRefactored />
       </PageContent>

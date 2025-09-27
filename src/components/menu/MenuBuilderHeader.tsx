@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import { QRCodeComponent } from '@/components/ui/qr-code';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useState } from 'react';
 
 interface MenuBuilderHeaderProps {
@@ -37,15 +38,16 @@ export function MenuBuilderHeader({
   onDownloadQR
 }: MenuBuilderHeaderProps) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
 
   const handleCopyURL = () => {
     if (selectedRestaurantId) {
       const menuUrl = `${window.location.origin}/menu/${selectedRestaurantId}`;
       navigator.clipboard.writeText(menuUrl).then(() => {
-        alert('Menu URL copied to clipboard!');
+        alert(t('menuBuilder.header.urlCopied'));
       }).catch(() => {
-        alert(`Menu URL: ${menuUrl}`);
+        alert(`${t('menuBuilder.header.menuUrl')}: ${menuUrl}`);
       });
     }
   };
@@ -54,8 +56,8 @@ export function MenuBuilderHeader({
     <div className="space-y-4">
       {/* Page Title */}
       <div>
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Menu Builder</h1>
-        <p className="text-gray-600 text-sm sm:text-base mt-1">Create and manage your restaurant menu with drag-and-drop ease.</p>
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{t('menuBuilder.header.title')}</h1>
+        <p className="text-gray-600 text-sm sm:text-base mt-1">{t('menuBuilder.header.description')}</p>
       </div>
 
       {/* Preview Actions */}
@@ -68,13 +70,13 @@ export function MenuBuilderHeader({
             disabled={!selectedRestaurantId}
           >
             <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-            <span className="hidden sm:inline">🚀 Preview Public Menu</span>
-            <span className="sm:hidden">🚀 Preview Menu</span>
+            <span className="hidden sm:inline">🚀 {t('menuBuilder.header.previewPublicMenu')}</span>
+            <span className="sm:hidden">🚀 {t('menuBuilder.header.previewMenu')}</span>
           </Button>
           {selectedRestaurantId && (
             <div className="text-xs sm:text-sm text-green-600 font-medium flex items-center justify-center sm:justify-start">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-              Live Preview Ready
+              {t('menuBuilder.header.livePreviewReady')}
             </div>
           )}
         </div>
@@ -87,22 +89,22 @@ export function MenuBuilderHeader({
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-full sm:w-auto">
                   <Zap className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Quick Templates</span>
-                  <span className="sm:hidden">Templates</span>
+                  <span className="hidden sm:inline">{t('menuBuilder.header.quickTemplates')}</span>
+                  <span className="sm:hidden">{t('menuBuilder.header.templates')}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem onClick={() => onLoadTemplate('default')}>
-                  🍽️ Restaurant Menu
-                  <span className="ml-auto text-xs text-gray-500">General</span>
+                  🍽️ {t('menuBuilder.header.restaurantMenu')}
+                  <span className="ml-auto text-xs text-gray-500">{t('menuBuilder.header.general')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onLoadTemplate('cafe')}>
-                  ☕ Cafe Menu
-                  <span className="ml-auto text-xs text-gray-500">Coffee & Pastries</span>
+                  ☕ {t('menuBuilder.header.cafeMenu')}
+                  <span className="ml-auto text-xs text-gray-500">{t('menuBuilder.header.coffeePastries')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onLoadTemplate('pizza')}>
-                  🍕 Pizza Shop
-                  <span className="ml-auto text-xs text-gray-500">Pizza & Sides</span>
+                  🍕 {t('menuBuilder.header.pizzaShop')}
+                  <span className="ml-auto text-xs text-gray-500">{t('menuBuilder.header.pizzaSides')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -115,8 +117,8 @@ export function MenuBuilderHeader({
               onClick={onClearMenu}
             >
               <Trash2 className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Clear Menu</span>
-              <span className="sm:hidden">Clear</span>
+              <span className="hidden sm:inline">{t('menuBuilder.header.clearMenu')}</span>
+              <span className="sm:hidden">{t('menuBuilder.header.clear')}</span>
             </Button>
           )}
         </div>
@@ -136,9 +138,9 @@ export function MenuBuilderHeader({
               </div>
             </div>
             <div className="flex-1 text-center sm:text-left">
-              <h3 className="font-semibold text-gray-900 mb-2">📱 Scan to View Menu</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">📱 {t('menuBuilder.header.scanToView')}</h3>
               <p className="text-sm text-gray-600 mb-3">
-                Customers can scan this QR code to instantly access your menu
+                {t('menuBuilder.header.qrDescription')}
               </p>
               <div className="bg-white p-2 rounded border text-xs font-mono text-gray-700 break-all mb-3">
                 {window.location.origin}/menu/{selectedRestaurantId}
@@ -146,12 +148,12 @@ export function MenuBuilderHeader({
               <div className="flex flex-col sm:flex-row gap-2 justify-center sm:justify-start">
                 <Button variant="outline" size="sm" onClick={handleCopyURL}>
                   <Copy className="w-4 h-4 mr-2" />
-                  Copy URL
+                  {t('menuBuilder.header.copyUrl')}
                 </Button>
                 {onDownloadQR && (
                   <Button variant="outline" size="sm" onClick={onDownloadQR}>
                     <Download className="w-4 h-4 mr-2" />
-                    Download QR
+                    {t('menuBuilder.header.downloadQr')}
                   </Button>
                 )}
               </div>

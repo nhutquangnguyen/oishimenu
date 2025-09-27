@@ -9,6 +9,7 @@ import { CategoryItem } from './CategoryItem';
 import { MenuItemDialog } from './MenuItemDialog';
 import { MenuCategory, MenuItem } from './types';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MenuBuilderContentProps {
   categories: MenuCategory[];
@@ -67,6 +68,8 @@ export function MenuBuilderContent({
   expandedCategories,
   onToggleCategoryExpanded
 }: MenuBuilderContentProps) {
+  const { t } = useLanguage();
+
   return (
     <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd} collisionDetection={closestCenter}>
       <div className="space-y-6">
@@ -76,7 +79,7 @@ export function MenuBuilderContent({
             {isAddingCategory ? (
               <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 <Input
-                  placeholder="Category name"
+                  placeholder={t('menuBuilder.builder.categoryNamePlaceholder')}
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
                   className="w-full sm:w-64"
@@ -89,7 +92,7 @@ export function MenuBuilderContent({
                 />
                 <div className="flex space-x-2 sm:space-x-3">
                   <Button onClick={onAddCategory} disabled={!newCategoryName.trim()} className="flex-1 sm:flex-none">
-                    Add
+                    {t('menuBuilder.builder.add')}
                   </Button>
                   <Button
                     variant="outline"
@@ -99,7 +102,7 @@ export function MenuBuilderContent({
                     }}
                     className="flex-1 sm:flex-none"
                   >
-                    Cancel
+                    {t('menuBuilder.builder.cancel')}
                   </Button>
                 </div>
               </div>
@@ -109,7 +112,7 @@ export function MenuBuilderContent({
                 className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Add Category
+                {t('menuBuilder.builder.addCategory')}
               </Button>
             )}
           </div>
@@ -125,14 +128,14 @@ export function MenuBuilderContent({
               {allExpanded ? (
                 <>
                   <ChevronUp className="w-4 h-4" />
-                  <span className="hidden sm:inline">Collapse All</span>
-                  <span className="sm:hidden">Collapse</span>
+                  <span className="hidden sm:inline">{t('menuBuilder.builder.collapseAll')}</span>
+                  <span className="sm:hidden">{t('menuBuilder.builder.collapse')}</span>
                 </>
               ) : (
                 <>
                   <ChevronDown className="w-4 h-4" />
-                  <span className="hidden sm:inline">Expand All</span>
-                  <span className="sm:hidden">Expand</span>
+                  <span className="hidden sm:inline">{t('menuBuilder.builder.expandAll')}</span>
+                  <span className="sm:hidden">{t('menuBuilder.builder.expand')}</span>
                 </>
               )}
             </Button>
@@ -147,16 +150,16 @@ export function MenuBuilderContent({
                 <div className="text-gray-400 mb-4">
                   <GripVertical className="w-12 h-12" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No categories yet</h3>
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">{t('menuBuilder.builder.noCategoriesTitle')}</h3>
                 <p className="text-gray-500 text-center mb-4">
-                  Start by adding your first category to organize your menu items
+                  {t('menuBuilder.builder.noCategoriesDescription')}
                 </p>
                 <Button
                   onClick={() => setIsAddingCategory(true)}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Your First Category
+                  {t('menuBuilder.builder.addFirstCategory')}
                 </Button>
               </CardContent>
             </Card>
@@ -195,7 +198,7 @@ export function MenuBuilderContent({
               <span className="text-sm font-medium">
                 {activeId.startsWith('category-') 
                   ? categories.find(cat => `category-${cat.id}` === activeId)?.name
-                  : 'Menu Item'
+                  : t('menuBuilder.builder.menuItem')
                 }
               </span>
             </div>

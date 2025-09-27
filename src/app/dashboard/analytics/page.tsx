@@ -26,16 +26,24 @@ export default function AnalyticsPage() {
         // First, try to get cached analytics
         let analyticsData = await getAnalytics(currentRestaurant.id);
         
-        // If no cached analytics, generate demo data and calculate
+        // If no cached analytics, show empty state instead of generating demo data
         if (!analyticsData) {
-          // Generate demo orders for the restaurant (only if they don't exist)
-          await generateDemoOrders(currentRestaurant.id, user.uid, user.email);
-          
-          // Calculate and cache analytics
-          analyticsData = await calculateAnalytics(currentRestaurant.id);
-          // Set the userId for the analytics data
-          analyticsData.userId = user.uid;
-          await saveAnalytics(analyticsData);
+          // Set empty analytics for new restaurants
+          analyticsData = {
+            userId: user.uid,
+            revenue: { current: 0, change: 0 },
+            orders: { current: 0, change: 0 },
+            averageOrder: { current: 0, change: 0 },
+            completionRate: { current: 0, change: 0 },
+            topItems: [],
+            recentOrders: [],
+            insights: [
+              "📊 Welcome to your analytics dashboard!",
+              "🍽️ Add menu items and start receiving orders to see data here",
+              "📈 Analytics will automatically update as you get orders"
+            ],
+            lastUpdated: new Date()
+          };
         }
         
         // Convert Firestore Timestamps to JavaScript Dates for the component
@@ -43,9 +51,9 @@ export default function AnalyticsPage() {
           ...analyticsData,
           recentOrders: analyticsData.recentOrders.map(order => ({
             ...order,
-            createdAt: order.createdAt.toDate()
+            createdAt: order.createdAt?.toDate ? order.createdAt.toDate() : order.createdAt
           })),
-          lastUpdated: analyticsData.lastUpdated.toDate()
+          lastUpdated: analyticsData.lastUpdated?.toDate ? analyticsData.lastUpdated.toDate() : analyticsData.lastUpdated
         };
         setAnalytics(convertedAnalytics);
       } catch (error) {

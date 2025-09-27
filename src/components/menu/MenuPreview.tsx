@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { MenuCategory } from './types';
 import { themes } from './constants';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MenuPreviewProps {
   categories: MenuCategory[];
@@ -68,6 +69,7 @@ export function MenuPreview({
   showPoweredBy,
   setShowPoweredBy
 }: MenuPreviewProps) {
+  const { t } = useLanguage();
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,13 +98,13 @@ export function MenuPreview({
       <div className="flex-1">
         <Card>
           <CardHeader>
-            <CardTitle>Menu Preview</CardTitle>
-            <CardDescription>See how your menu looks to customers</CardDescription>
+            <CardTitle>{t('menuBuilder.brand.menuPreview')}</CardTitle>
+            <CardDescription>{t('menuBuilder.brand.menuPreviewDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Device Selector */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Preview Device</label>
+              <label className="text-sm font-medium mb-2 block">{t('menuBuilder.brand.previewDevice')}</label>
               <div className="flex space-x-2">
                 <Button
                   variant={previewDevice === 'mobile' ? 'default' : 'outline'}
@@ -110,7 +112,7 @@ export function MenuPreview({
                   onClick={() => setPreviewDevice('mobile')}
                 >
                   <Smartphone className="w-4 h-4 mr-2" />
-                  Mobile
+                  {t('menuBuilder.brand.mobile')}
                 </Button>
                 <Button
                   variant={previewDevice === 'tablet' ? 'default' : 'outline'}
@@ -118,7 +120,7 @@ export function MenuPreview({
                   onClick={() => setPreviewDevice('tablet')}
                 >
                   <Tablet className="w-4 h-4 mr-2" />
-                  Tablet
+                  {t('menuBuilder.brand.tablet')}
                 </Button>
                 <Button
                   variant={previewDevice === 'desktop' ? 'default' : 'outline'}
@@ -126,14 +128,14 @@ export function MenuPreview({
                   onClick={() => setPreviewDevice('desktop')}
                 >
                   <Monitor className="w-4 h-4 mr-2" />
-                  Desktop
+                  {t('menuBuilder.brand.desktop')}
                 </Button>
               </div>
             </div>
 
             {/* Theme Selector */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Theme Color</label>
+              <label className="text-sm font-medium mb-2 block">{t('menuBuilder.brand.themeColor')}</label>
               <div className="grid grid-cols-4 gap-2">
                 {Object.entries(themes).map(([key, theme]) => (
                   <button
@@ -159,14 +161,14 @@ export function MenuPreview({
 
             {/* Logo Upload */}
             <div>
-              <Label className="text-sm font-medium mb-2 block">Restaurant Logo</Label>
+              <Label className="text-sm font-medium mb-2 block">{t('menuBuilder.brand.restaurantLogo')}</Label>
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
                   {logo ? (
                     <div className="relative">
                       <img
                         src={logo}
-                        alt="Restaurant Logo"
+                        alt={t('menuBuilder.brand.restaurantLogoAlt')}
                         className="w-16 h-16 object-contain border border-gray-200 rounded-lg bg-white p-2"
                       />
                       <Button
@@ -192,10 +194,10 @@ export function MenuPreview({
                     className="w-full"
                   >
                     <Upload className="w-4 h-4 mr-2" />
-                    {logo ? 'Replace Logo' : 'Upload Logo'}
+                    {logo ? t('menuBuilder.brand.replaceLogo') : t('menuBuilder.brand.uploadLogo')}
                   </Button>
                   <p className="text-xs text-gray-500 mt-1">
-                    PNG or JPG, max 2MB
+                    {t('menuBuilder.brand.logoFileTypes')}
                   </p>
                 </div>
               </div>
@@ -211,8 +213,8 @@ export function MenuPreview({
             {/* Auto-save Toggle */}
             <div className="flex items-center justify-between">
               <div>
-                <label className="text-sm font-medium">Auto-save</label>
-                <p className="text-xs text-gray-500">Automatically save changes every 2 seconds</p>
+                <label className="text-sm font-medium">{t('menuBuilder.brand.autoSave')}</label>
+                <p className="text-xs text-gray-500">{t('menuBuilder.brand.autoSaveDescription')}</p>
               </div>
               <Switch
                 checked={isAutoSaveEnabled}
@@ -223,8 +225,8 @@ export function MenuPreview({
             {/* Public Status */}
             <div className="flex items-center justify-between">
               <div>
-                <label className="text-sm font-medium">Make Menu Public</label>
-                <p className="text-xs text-gray-500">Allow customers to view your menu</p>
+                <label className="text-sm font-medium">{t('menuBuilder.brand.makeMenuPublic')}</label>
+                <p className="text-xs text-gray-500">{t('menuBuilder.brand.makeMenuPublicDescription')}</p>
               </div>
               <Switch
                 checked={isMenuPublic}
@@ -235,8 +237,8 @@ export function MenuPreview({
             {/* Powered By Footer */}
             <div className="flex items-center justify-between">
               <div>
-                <label className="text-sm font-medium">Show "Powered by OishiMenu"</label>
-                <p className="text-xs text-gray-500">Display our branding in menu footer</p>
+                <label className="text-sm font-medium">{t('menuBuilder.brand.showPoweredBy')}</label>
+                <p className="text-xs text-gray-500">{t('menuBuilder.brand.showPoweredByDescription')}</p>
               </div>
               <Switch
                 checked={showPoweredBy}
@@ -248,11 +250,11 @@ export function MenuPreview({
             <div className="flex space-x-2">
               <Button variant="outline" className="flex-1" onClick={onCustomize}>
                 <Settings className="w-4 h-4 mr-2" />
-                Customize
+                {t('menuBuilder.brand.customize')}
               </Button>
               <Button variant="outline" className="flex-1" onClick={onShare}>
                 <Share2 className="w-4 h-4 mr-2" />
-                Share
+                {t('menuBuilder.brand.share')}
               </Button>
             </div>
           </CardContent>
@@ -263,9 +265,9 @@ export function MenuPreview({
       <div className="flex-1">
         <Card>
           <CardHeader>
-            <CardTitle>Live Preview</CardTitle>
+            <CardTitle>{t('menuBuilder.brand.livePreview')}</CardTitle>
             <CardDescription>
-              {isMenuPublic ? 'Your menu is live and accessible to customers' : 'Your menu is private'}
+              {isMenuPublic ? t('menuBuilder.brand.menuIsLive') : t('menuBuilder.brand.menuIsPrivate')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -290,7 +292,7 @@ export function MenuPreview({
                         <div className="mb-3">
                           <img
                             src={logo}
-                            alt="Restaurant Logo"
+                            alt={t('menuBuilder.brand.restaurantLogoAlt')}
                             className="w-16 h-16 mx-auto object-contain bg-white/10 backdrop-blur-sm rounded-lg p-2"
                           />
                         </div>
@@ -319,19 +321,19 @@ export function MenuPreview({
                                   <h3 className="font-semibold text-gray-900">{item.name}</h3>
                                   {item.isFeatured && (
                                     <Badge className="bg-yellow-100 text-yellow-800 text-xs">
-                                      Featured
+                                      {t('menuBuilder.brand.featured')}
                                     </Badge>
                                   )}
                                   {!item.isAvailable && (
                                     <Badge variant="destructive" className="text-xs">
-                                      Unavailable
+                                      {t('menuBuilder.brand.unavailable')}
                                     </Badge>
                                   )}
                                 </div>
                                 <p className="text-sm text-gray-600 mb-2">{item.description}</p>
                                 {item.allergens && item.allergens.length > 0 && (
                                   <p className="text-xs text-red-600">
-                                    Contains: {item.allergens.join(', ')}
+                                    {t('menuBuilder.brand.contains')}: {item.allergens.join(', ')}
                                   </p>
                                 )}
                               </div>
@@ -351,7 +353,7 @@ export function MenuPreview({
                 {/* Menu Footer */}
                 <div className="p-4 bg-gray-50 text-center">
                   <p className="text-sm text-gray-500">
-                    Scan QR code to order • Table service available
+                    {t('menuBuilder.brand.menuFooterText')}
                   </p>
                 </div>
               </div>

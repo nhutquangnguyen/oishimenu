@@ -20,6 +20,7 @@ import {
   X
 } from 'lucide-react';
 import { MenuOptionGroup, MenuOption } from './types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OptionsManagerProps {
   optionGroups: MenuOptionGroup[];
@@ -31,6 +32,7 @@ interface OptionsManagerProps {
 }
 
 export function OptionsManager({ optionGroups, setOptionGroups, categories, setCategories, restaurantId, markAsChanged }: OptionsManagerProps) {
+  const { t } = useLanguage();
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
   const [isCreatingOption, setIsCreatingOption] = useState(false);
   const [isEditingGroup, setIsEditingGroup] = useState(false);
@@ -237,16 +239,16 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Menu Options</h2>
-          <p className="text-gray-600 text-sm sm:text-base">Manage sizes, toppings, and other options for your menu items</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{t('menuBuilder.options.title')}</h2>
+          <p className="text-gray-600 text-sm sm:text-base">{t('menuBuilder.options.description')}</p>
         </div>
         <Button
           onClick={() => setIsCreatingGroup(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-2" />
-          <span className="hidden sm:inline">Add Option Group</span>
-          <span className="sm:hidden">Add Group</span>
+          <span className="hidden sm:inline">{t('menuBuilder.options.addOptionGroup')}</span>
+          <span className="sm:hidden">{t('menuBuilder.options.addGroup')}</span>
         </Button>
       </div>
 
@@ -260,37 +262,37 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
       }}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{isEditingGroup ? 'Edit Option Group' : 'Create Option Group'}</DialogTitle>
+            <DialogTitle>{isEditingGroup ? t('menuBuilder.options.editOptionGroup') : t('menuBuilder.options.createOptionGroup')}</DialogTitle>
             <DialogDescription>
-              {isEditingGroup ? 'Update the option group settings and linked dishes' : 'Create a new option group (e.g., Size, Toppings, Extras)'}
+              {isEditingGroup ? t('menuBuilder.options.editDescription') : t('menuBuilder.options.createDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="groupName">Group Name</Label>
+              <Label htmlFor="groupName">{t('menuBuilder.options.groupName')}</Label>
               <Input
                 id="groupName"
                 value={newGroup.name}
                 onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
-                placeholder="e.g., Size, Toppings, Extras"
+                placeholder={t('menuBuilder.options.groupNamePlaceholder')}
               />
             </div>
 
             <div>
-              <Label htmlFor="groupDescription">Description (Optional)</Label>
+              <Label htmlFor="groupDescription">{t('menuBuilder.options.descriptionOptional')}</Label>
               <Textarea
                 id="groupDescription"
                 value={newGroup.description}
                 onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })}
-                placeholder="Describe this option group..."
+                placeholder={t('menuBuilder.options.descriptionPlaceholder')}
                 rows={2}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="groupType">Selection Type</Label>
+                <Label htmlFor="groupType">{t('menuBuilder.options.selectionType')}</Label>
                 <Select
                   value={newGroup.type}
                   onValueChange={(value: 'single' | 'multiple') => setNewGroup({ ...newGroup, type: value })}
@@ -299,8 +301,8 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="single">Single Choice (Radio)</SelectItem>
-                    <SelectItem value="multiple">Multiple Choice (Checkboxes)</SelectItem>
+                    <SelectItem value="single">{t('menuBuilder.options.singleChoice')}</SelectItem>
+                    <SelectItem value="multiple">{t('menuBuilder.options.multipleChoice')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -311,14 +313,14 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
                   checked={newGroup.isRequired}
                   onCheckedChange={(checked) => setNewGroup({ ...newGroup, isRequired: checked })}
                 />
-                <Label htmlFor="isRequired">Required</Label>
+                <Label htmlFor="isRequired">{t('menuBuilder.options.required')}</Label>
               </div>
             </div>
 
             {newGroup.type === 'multiple' && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="minSelections">Min Selections</Label>
+                  <Label htmlFor="minSelections">{t('menuBuilder.options.minSelections')}</Label>
                   <Input
                     id="minSelections"
                     type="number"
@@ -328,7 +330,7 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
                   />
                 </div>
                 <div>
-                  <Label htmlFor="maxSelections">Max Selections</Label>
+                  <Label htmlFor="maxSelections">{t('menuBuilder.options.maxSelections')}</Label>
                   <Input
                     id="maxSelections"
                     type="number"
@@ -342,8 +344,8 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
 
             {/* Dish Selection */}
             <div>
-              <Label>Apply to Dishes</Label>
-              <p className="text-sm text-gray-500 mb-3">Select which dishes this option group will be available for</p>
+              <Label>{t('menuBuilder.options.applyToDishes')}</Label>
+              <p className="text-sm text-gray-500 mb-3">{t('menuBuilder.options.selectDishesDescription')}</p>
               <div className="max-h-48 overflow-y-auto border rounded-lg p-3 space-y-2">
                 {categories.map((category) => (
                   <div key={category.id} className="space-y-1">
@@ -377,7 +379,7 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
               </div>
               {newGroup.selectedDishes.length > 0 && (
                 <div className="mt-2 text-sm text-green-600">
-                  ✓ Will be available for {newGroup.selectedDishes.length} dish(es)
+                  ✓ {t('menuBuilder.options.availableForDishes').replace('{count}', newGroup.selectedDishes.length.toString())}
                 </div>
               )}
             </div>
@@ -389,13 +391,13 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
               setIsEditingGroup(false);
               setSelectedGroupId(null);
             }}>
-              Cancel
+              {t('menuBuilder.options.cancel')}
             </Button>
             <Button 
               onClick={isEditingGroup ? updateOptionGroup : addOptionGroup} 
               disabled={!newGroup.name.trim()}
             >
-              {isEditingGroup ? 'Update Group' : 'Create Group'}
+              {isEditingGroup ? t('menuBuilder.options.updateGroup') : t('menuBuilder.options.createGroup')}
             </Button>
           </div>
         </DialogContent>
@@ -405,25 +407,25 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
       <Dialog open={isCreatingOption} onOpenChange={setIsCreatingOption}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Add Option</DialogTitle>
+            <DialogTitle>{t('menuBuilder.options.addOption')}</DialogTitle>
             <DialogDescription>
-              Add a new option to "{optionGroups.find(g => g.id === selectedGroupId)?.name}"
+              {t('menuBuilder.options.addOptionToGroup').replace('{groupName}', optionGroups.find(g => g.id === selectedGroupId)?.name || '')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="optionName">Option Name</Label>
+              <Label htmlFor="optionName">{t('menuBuilder.options.optionName')}</Label>
               <Input
                 id="optionName"
                 value={newOption.name}
                 onChange={(e) => setNewOption({ ...newOption, name: e.target.value })}
-                placeholder="e.g., Large, Extra Cheese, No Onions"
+                placeholder={t('menuBuilder.options.optionNamePlaceholder')}
               />
             </div>
 
             <div>
-              <Label htmlFor="optionPrice">Additional Price</Label>
+              <Label htmlFor="optionPrice">{t('menuBuilder.options.additionalPrice')}</Label>
               <div className="relative">
                 <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
@@ -446,7 +448,7 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
                   checked={newOption.isDefault}
                   onCheckedChange={(checked) => setNewOption({ ...newOption, isDefault: checked })}
                 />
-                <Label htmlFor="isDefault">Default Option</Label>
+                <Label htmlFor="isDefault">{t('menuBuilder.options.defaultOption')}</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch

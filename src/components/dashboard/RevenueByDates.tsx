@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AnalyticsData } from '@/components/dashboard/types';
 import { TrendingUp, DollarSign } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RevenueByDatesProps {
   analytics: AnalyticsData;
 }
 
 export function RevenueByDates({ analytics }: RevenueByDatesProps) {
+  const { t } = useLanguage();
   const [hoveredBar, setHoveredBar] = useState<number | null>(null);
 
   // Generate revenue data for the last 7 days
@@ -57,16 +59,16 @@ export function RevenueByDates({ analytics }: RevenueByDatesProps) {
           <div>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-green-600" />
-              Revenue by Date
+              {t('dashboard.revenueByDates.title')}
             </CardTitle>
-            <CardDescription>Daily revenue for the last 7 days</CardDescription>
+            <CardDescription>{t('dashboard.revenueByDates.description')}</CardDescription>
           </div>
           <div className="text-right">
             <div className="flex items-center gap-1 text-2xl font-bold text-green-600">
               <DollarSign className="h-5 w-5" />
               {avgDailyRevenue.toLocaleString()}
             </div>
-            <p className="text-sm text-gray-600">Avg per day</p>
+            <p className="text-sm text-gray-600">{t('dashboard.revenueByDates.avgPerDay')}</p>
           </div>
         </div>
       </CardHeader>
@@ -82,8 +84,8 @@ export function RevenueByDates({ analytics }: RevenueByDatesProps) {
                   {hoveredBar === index && (
                     <div className="absolute -top-16 bg-gray-900 text-white p-2 rounded-md shadow-lg text-xs whitespace-nowrap z-10">
                       <div className="font-medium">{day.fullDate}</div>
-                      <div className="text-green-300">Revenue: ${day.revenue.toLocaleString()}</div>
-                      <div className="text-blue-300">Orders: {day.orders}</div>
+                      <div className="text-green-300">{t('dashboard.revenueByDates.revenue')}: ${day.revenue.toLocaleString()}</div>
+                      <div className="text-blue-300">{t('dashboard.revenueByDates.orders')}: {day.orders}</div>
                     </div>
                   )}
 
@@ -120,19 +122,19 @@ export function RevenueByDates({ analytics }: RevenueByDatesProps) {
             <div className="text-lg font-semibold text-gray-900">
               ${totalWeekRevenue.toLocaleString()}
             </div>
-            <div className="text-sm text-gray-600">This Week</div>
+            <div className="text-sm text-gray-600">{t('dashboard.revenueByDates.thisWeek')}</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-semibold text-gray-900">
               ${maxRevenue.toLocaleString()}
             </div>
-            <div className="text-sm text-gray-600">Best Day</div>
+            <div className="text-sm text-gray-600">{t('dashboard.revenueByDates.bestDay')}</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-semibold text-gray-900">
               {revenueData.reduce((sum, day) => sum + day.orders, 0)}
             </div>
-            <div className="text-sm text-gray-600">Total Orders</div>
+            <div className="text-sm text-gray-600">{t('dashboard.revenueByDates.totalOrders')}</div>
           </div>
         </div>
       </CardContent>

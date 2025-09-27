@@ -9,6 +9,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface QuickActionsProps {
   onAddMenuItem: () => void;
@@ -22,31 +23,32 @@ export function QuickActions({
   onViewAnalytics 
 }: QuickActionsProps) {
   const router = useRouter();
+  const { t } = useLanguage();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Quick Actions</CardTitle>
-        <CardDescription>Common tasks to get you started</CardDescription>
+        <CardTitle>{t('dashboard.quickActions.title')}</CardTitle>
+        <CardDescription>{t('dashboard.quickActions.description') || 'Common tasks to get you started'}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <Button className="w-full justify-start text-sm sm:text-base" onClick={onAddMenuItem}>
           <Plus className="mr-2 h-4 w-4" />
-          Add Menu Item
+          {t('dashboard.quickActions.addMenuItem')}
         </Button>
         <Button variant="outline" className="w-full justify-start text-sm sm:text-base" onClick={() => router.push('/dashboard/pos')}>
           <CreditCard className="mr-2 h-4 w-4" />
-          <span className="hidden sm:inline">Open POS System</span>
-          <span className="sm:hidden">POS System</span>
+          <span className="hidden sm:inline">{t('dashboard.quickActions.openPOS')}</span>
+          <span className="sm:hidden">{t('dashboard.quickActions.posSystem')}</span>
         </Button>
         <Button variant="outline" className="w-full justify-start text-sm sm:text-base" onClick={onPreviewMenu}>
           <Eye className="mr-2 h-4 w-4" />
-          <span className="hidden sm:inline">Preview Public Menu</span>
-          <span className="sm:hidden">Preview Menu</span>
+          <span className="hidden sm:inline">{t('dashboard.quickActions.previewPublicMenu')}</span>
+          <span className="sm:hidden">{t('dashboard.quickActions.previewMenu')}</span>
         </Button>
         <Button variant="outline" className="w-full justify-start text-sm sm:text-base" onClick={onViewAnalytics}>
           <BarChart3 className="mr-2 h-4 w-4" />
-          View Analytics
+          {t('dashboard.quickActions.viewAnalytics')}
         </Button>
       </CardContent>
     </Card>

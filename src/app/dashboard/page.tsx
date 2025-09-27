@@ -12,6 +12,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRestaurant } from '@/contexts/RestaurantContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getAnalytics, calculateAnalytics, saveAnalytics, generateDemoOrders } from '@/lib/firestore';
 import { AnalyticsData } from '@/components/dashboard/types';
 import { StatsGrid } from '@/components/dashboard/StatsGrid';
@@ -28,6 +29,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, isDisabled } = useAuth();
   const { currentRestaurant, restaurants, loading: restaurantsLoading } = useRestaurant();
+  const { t } = useLanguage();
   
   // Load real analytics data
   useEffect(() => {
@@ -40,16 +42,24 @@ export default function DashboardPage() {
         // First, try to get cached analytics
         let analyticsData = await getAnalytics(currentRestaurant.id);
         
-        // If no cached analytics, generate demo data and calculate
+        // If no cached analytics, show empty state instead of generating demo data
         if (!analyticsData) {
-          // Generate demo orders for the restaurant (only if they don't exist)
-          await generateDemoOrders(currentRestaurant.id, user.uid, user.email);
-          
-          // Calculate and cache analytics
-          analyticsData = await calculateAnalytics(currentRestaurant.id);
-          // Set the userId for the analytics data
-          analyticsData.userId = user.uid;
-          await saveAnalytics(analyticsData);
+          // Set empty analytics for new restaurants
+          analyticsData = {
+            userId: user.uid,
+            revenue: { current: 0, change: 0 },
+            orders: { current: 0, change: 0 },
+            averageOrder: { current: 0, change: 0 },
+            completionRate: { current: 0, change: 0 },
+            topItems: [],
+            recentOrders: [],
+            insights: [
+              "📊 Welcome to your restaurant dashboard!",
+              "🍽️ Add menu items to start receiving orders",
+              "📱 Share your QR code with customers"
+            ],
+            lastUpdated: new Date()
+          };
         }
         
         // Convert Firestore Timestamps to JavaScript Dates for the component
@@ -57,9 +67,9 @@ export default function DashboardPage() {
           ...analyticsData,
           recentOrders: analyticsData.recentOrders.map(order => ({
             ...order,
-            createdAt: order.createdAt.toDate()
+            createdAt: order.createdAt?.toDate ? order.createdAt.toDate() : order.createdAt
           })),
-          lastUpdated: analyticsData.lastUpdated.toDate()
+          lastUpdated: analyticsData.lastUpdated?.toDate ? analyticsData.lastUpdated.toDate() : analyticsData.lastUpdated
         };
         setAnalytics(convertedAnalytics);
       } catch (error) {
@@ -209,24 +219,24 @@ export default function DashboardPage() {
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="today">Today</SelectItem>
-          <SelectItem value="yesterday">Yesterday</SelectItem>
-          <SelectItem value="thisWeek">This Week</SelectItem>
-          <SelectItem value="lastWeek">Last Week</SelectItem>
-          <SelectItem value="thisMonth">This Month</SelectItem>
-          <SelectItem value="lastMonth">Last Month</SelectItem>
+          <SelectItem value="today">{t('dashboard.timeRange.today')}</SelectItem>
+          <SelectItem value="yesterday">{t('dashboard.timeRange.yesterday')}</SelectItem>
+          <SelectItem value="thisWeek">{t('dashboard.timeRange.thisWeek')}</SelectItem>
+          <SelectItem value="lastWeek">{t('dashboard.timeRange.lastWeek')}</SelectItem>
+          <SelectItem value="thisMonth">{t('dashboard.timeRange.thisMonth')}</SelectItem>
+          <SelectItem value="lastMonth">{t('dashboard.timeRange.lastMonth')}</SelectItem>
         </SelectContent>
       </Select>
       <div className="grid grid-cols-2 sm:flex sm:space-x-2 gap-2 sm:gap-0">
         <Button variant="outline" onClick={handleCustomRange} className="text-xs sm:text-sm">
           <Calendar className="w-4 h-4 sm:mr-2" />
-          <span className="hidden sm:inline">Custom Range</span>
-          <span className="sm:hidden">Custom</span>
+          <span className="hidden sm:inline">{t('dashboard.actions.customRange')}</span>
+          <span className="sm:hidden">{t('dashboard.actions.custom')}</span>
         </Button>
         <Button variant="outline" onClick={handleExportReport} className="text-xs sm:text-sm">
           <Download className="w-4 h-4 sm:mr-2" />
-          <span className="hidden sm:inline">Export Report</span>
-          <span className="sm:hidden">Export</span>
+          <span className="hidden sm:inline">{t('dashboard.actions.exportReport')}</span>
+          <span className="sm:hidden">{t('dashboard.actions.export')}</span>
         </Button>
       </div>
     </div>
@@ -235,8 +245,8 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       <PageContent
-        title="Dashboard"
-        description="Welcome back! Here's what's happening with your restaurant."
+        title={t('dashboard.nav.dashboard')}
+        description={t('dashboard.description')}
         headerActions={headerActions}
       >
 

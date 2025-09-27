@@ -139,7 +139,7 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
       setRestaurants([createdRestaurant]);
       setCurrentRestaurantWithPersistence(createdRestaurant);
 
-      // 2. Create default area and table
+      // 2. Create default area with one table
       const defaultTablesData = {
         areas: [
           {
@@ -245,6 +245,26 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
       };
 
       await setDoc(doc(db, 'menus', restaurantId), defaultMenuData);
+
+      // Create default area with one table for manually created restaurants too
+      const defaultTablesData = {
+        areas: [
+          {
+            name: 'Main Dining',
+            tables: [
+              {
+                id: `table-${Date.now()}`,
+                name: 'Table 1',
+                capacity: 4,
+                status: 'available'
+              }
+            ]
+          }
+        ],
+        lastUpdated: now
+      };
+
+      await setDoc(doc(db, 'tables', restaurantId), defaultTablesData);
 
       setRestaurants(prev => [createdRestaurant, ...prev]);
       setCurrentRestaurantWithPersistence(createdRestaurant);

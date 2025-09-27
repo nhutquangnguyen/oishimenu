@@ -5,6 +5,7 @@ import { MenuBuilderContent } from './MenuBuilderContent';
 import { MenuPreview } from './MenuPreview';
 import { MenuSettings } from './MenuSettings';
 import { OptionsManager } from './OptionsManager';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MenuBuilderTabsProps {
   activeTab: string;
@@ -109,19 +110,21 @@ export function MenuBuilderTabs({
   showPoweredBy,
   setShowPoweredBy
 }: MenuBuilderTabsProps) {
+  const { t } = useLanguage();
+
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
       <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6">
         <TabsTrigger value="builder" className="text-xs sm:text-sm font-medium px-2 sm:px-4">
-          <span className="hidden sm:inline">🏗️ Builder</span>
+          <span className="hidden sm:inline">🏗️ {t('menuBuilder.tabs.builder')}</span>
           <span className="sm:hidden">🏗️</span>
         </TabsTrigger>
         <TabsTrigger value="options" className="text-xs sm:text-sm font-medium px-2 sm:px-4">
-          <span className="hidden sm:inline">⚙️ Options</span>
+          <span className="hidden sm:inline">⚙️ {t('menuBuilder.tabs.options')}</span>
           <span className="sm:hidden">⚙️</span>
         </TabsTrigger>
         <TabsTrigger value="preview" className="text-xs sm:text-sm font-medium px-2 sm:px-4">
-          <span className="hidden sm:inline">🎨 Brand</span>
+          <span className="hidden sm:inline">🎨 {t('menuBuilder.tabs.brand')}</span>
           <span className="sm:hidden">🎨</span>
         </TabsTrigger>
       </TabsList>

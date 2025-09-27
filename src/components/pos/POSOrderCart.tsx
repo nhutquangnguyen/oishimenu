@@ -18,6 +18,7 @@ import {
   Receipt,
   CheckCircle
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CartItem {
   id: string;
@@ -67,6 +68,8 @@ export function POSOrderCart({
   onResetOrder,
   onPrintReceipt
 }: POSOrderCartProps) {
+  const { t } = useLanguage();
+
   const getTotal = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
@@ -84,31 +87,31 @@ export function POSOrderCart({
       <CardHeader>
         <CardTitle className="flex items-center">
           <ShoppingCart className="w-5 h-5 mr-2" />
-          Order Cart
+          {t('pos.orderCart')}
           {cart.length > 0 && (
             <Badge variant="secondary" className="ml-2">
-              {cart.length} items
+              {cart.length} {t('pos.items')}
             </Badge>
           )}
         </CardTitle>
-        <CardDescription>Review and complete the order</CardDescription>
+        <CardDescription>{t('pos.reviewOrder')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Order Details */}
         <div className="space-y-3">
           <div>
-            <Label htmlFor="table">Table Selection</Label>
+            <Label htmlFor="table">{t('pos.tableSelection')}</Label>
             <Select value={tableNumber} onValueChange={setTableNumber}>
               <SelectTrigger>
-                <SelectValue placeholder="Select table">
+                <SelectValue placeholder={t('pos.selectTable')}>
                   {tableNumber && tableNumber !== 'walk-in' ? (() => {
                     const selectedTable = tables.find(table => table.number === tableNumber);
-                    return selectedTable ? `${selectedTable.area} - Table ${selectedTable.number}` : `Table ${tableNumber}`;
-                  })() : tableNumber === 'walk-in' ? 'Walk-in' : 'Select table'}
+                    return selectedTable ? `${selectedTable.area} - ${t('pos.table')} ${selectedTable.number}` : `${t('pos.table')} ${tableNumber}`;
+                  })() : tableNumber === 'walk-in' ? t('pos.walkIn') : t('pos.selectTable')}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="walk-in">Walk-in</SelectItem>
+                <SelectItem value="walk-in">{t('pos.walkIn')}</SelectItem>
                 {(() => {
                   // Group tables by area for better organization
                   const tablesByArea = tables.reduce((acc, table) => {
@@ -131,7 +134,7 @@ export function POSOrderCart({
                           <SelectItem key={table.id || `${areaName}-table-${index}`} value={table.number}>
                             <div className="flex items-center">
                               <span className="text-gray-500 text-xs mr-2">{areaName}</span>
-                              <span>Table {table.number}</span>
+                              <span>{t('pos.table')} {table.number}</span>
                             </div>
                           </SelectItem>
                         );
@@ -144,10 +147,10 @@ export function POSOrderCart({
           </div>
           
           <div>
-            <Label htmlFor="customer">Customer Name</Label>
+            <Label htmlFor="customer">{t('pos.customerName')}</Label>
             <Input
               id="customer"
-              placeholder="Enter customer name"
+              placeholder={t('pos.enterCustomerName')}
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
             />
@@ -158,7 +161,7 @@ export function POSOrderCart({
         {cart.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p>No items in cart</p>
+            <p>{t('pos.noItemsInCart')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -210,7 +213,7 @@ export function POSOrderCart({
         {/* Payment Method */}
         {cart.length > 0 && (
           <div>
-            <Label>Payment Method</Label>
+            <Label>{t('pos.paymentMethod')}</Label>
             <Select value={paymentMethod} onValueChange={(value: 'cash' | 'card' | 'digital') => setPaymentMethod(value)}>
               <SelectTrigger>
                 <SelectValue />
@@ -219,19 +222,19 @@ export function POSOrderCart({
                 <SelectItem value="cash">
                   <div className="flex items-center">
                     <DollarSign className="w-4 h-4 mr-2" />
-                    Cash
+                    {t('pos.cash')}
                   </div>
                 </SelectItem>
                 <SelectItem value="card">
                   <div className="flex items-center">
                     <CreditCard className="w-4 h-4 mr-2" />
-                    Card
+                    {t('pos.card')}
                   </div>
                 </SelectItem>
                 <SelectItem value="digital">
                   <div className="flex items-center">
                     <User className="w-4 h-4 mr-2" />
-                    Digital Wallet
+                    {t('pos.digitalWallet')}
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -243,15 +246,15 @@ export function POSOrderCart({
         {cart.length > 0 && (
           <div className="border-t pt-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Subtotal:</span>
+              <span>{t('pos.subtotal')}:</span>
               <span>${getTotal().toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>Tax (8%):</span>
+              <span>{t('pos.tax')}:</span>
               <span>${getTax().toFixed(2)}</span>
             </div>
             <div className="flex justify-between font-bold text-lg border-t pt-2">
-              <span>Total:</span>
+              <span>{t('pos.total')}:</span>
               <span>${getFinalTotal().toFixed(2)}</span>
             </div>
           </div>
@@ -268,17 +271,17 @@ export function POSOrderCart({
               {isCreating ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating Order...
+                  {t('pos.creatingOrder')}
                 </>
               ) : isPaid ? (
                 <>
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  Order Completed
+                  {t('pos.orderCompleted')}
                 </>
               ) : (
                 <>
                   <Receipt className="w-4 h-4 mr-2" />
-                  Create Order
+                  {t('pos.createOrder')}
                 </>
               )}
             </Button>
@@ -291,14 +294,14 @@ export function POSOrderCart({
                   className="flex-1"
                 >
                   <Receipt className="w-4 h-4 mr-2" />
-                  Print Receipt
+                  {t('pos.printReceipt')}
                 </Button>
                 <Button
                   onClick={onResetOrder}
                   variant="outline"
                   className="flex-1"
                 >
-                  New Order
+                  {t('pos.newOrder')}
                 </Button>
               </div>
             )}
@@ -310,7 +313,7 @@ export function POSOrderCart({
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center">
               <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-              <p className="text-green-800 font-medium">Order created successfully!</p>
+              <p className="text-green-800 font-medium">{t('pos.orderCreatedSuccessfully')}</p>
             </div>
           </div>
         )}

@@ -3,12 +3,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock } from 'lucide-react';
 import { AnalyticsData } from './types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface HourlyActivityProps {
   analytics: AnalyticsData;
 }
 
 export function HourlyActivity({ analytics }: HourlyActivityProps) {
+  const { t } = useLanguage();
   // Calculate hourly activity from real orders
   const calculateHourlyActivity = () => {
     const hours = [
@@ -38,9 +40,9 @@ export function HourlyActivity({ analytics }: HourlyActivityProps) {
       <CardHeader>
         <CardTitle className="flex items-center">
           <Clock className="w-5 h-5 mr-2" />
-          Hourly Activity
+          {t('dashboard.hourlyActivity.title')}
         </CardTitle>
-        <CardDescription>Orders by hour of day</CardDescription>
+        <CardDescription>{t('dashboard.hourlyActivity.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">

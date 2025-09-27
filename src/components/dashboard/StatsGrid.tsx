@@ -9,12 +9,14 @@ import {
   Clock
 } from 'lucide-react';
 import { AnalyticsData } from './types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StatsGridProps {
   analytics: AnalyticsData;
 }
 
 export function StatsGrid({ analytics }: StatsGridProps) {
+  const { t } = useLanguage();
   const StatCard = ({ 
     title, 
     value, 
@@ -40,8 +42,8 @@ export function StatsGrid({ analytics }: StatsGridProps) {
           <div className="flex items-center text-xs text-muted-foreground mt-1">
             <ChangeIcon className={`w-3 h-3 mr-1 flex-shrink-0 ${color}`} />
             <span className={`${color} truncate`}>{change >= 0 ? '+' : ''}{change.toFixed(1)}%</span>
-            <span className="ml-1 hidden sm:inline truncate">from previous period</span>
-            <span className="ml-1 sm:hidden">vs last</span>
+            <span className="ml-1 hidden sm:inline truncate">{t('dashboard.stats.fromPreviousPeriod')}</span>
+            <span className="ml-1 sm:hidden">{t('dashboard.stats.vsLast')}</span>
           </div>
         </CardContent>
       </Card>
@@ -51,25 +53,25 @@ export function StatsGrid({ analytics }: StatsGridProps) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
       <StatCard
-        title="Revenue"
+        title={t('dashboard.analytics.revenue')}
         value={`$${analytics.revenue.current.toFixed(2)}`}
         change={analytics.revenue.change}
         icon={DollarSign}
       />
       <StatCard
-        title="Orders"
+        title={t('dashboard.analytics.orders')}
         value={analytics.orders.current.toString()}
         change={analytics.orders.change}
         icon={ShoppingCart}
       />
       <StatCard
-        title="Avg Order"
+        title={t('dashboard.analytics.averageOrder')}
         value={`$${analytics.averageOrder.current.toFixed(2)}`}
         change={analytics.averageOrder.change}
         icon={TrendingUp}
       />
       <StatCard
-        title="Complete"
+        title={t('dashboard.analytics.completionRate')}
         value={`${analytics.completionRate.current.toFixed(1)}%`}
         change={analytics.completionRate.change}
         icon={Clock}

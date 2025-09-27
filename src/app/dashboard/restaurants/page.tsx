@@ -12,9 +12,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Building2, Plus, Settings, ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RestaurantsPage() {
   const { restaurants, loading, createRestaurant } = useRestaurant();
+  const { t } = useLanguage();
   const [pendingRestaurantName, setPendingRestaurantName] = useState('');
   const [isCreatingFromSignup, setIsCreatingFromSignup] = useState(false);
   const [newRestaurant, setNewRestaurant] = useState({
@@ -73,7 +75,7 @@ export default function RestaurantsPage() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading restaurants...</p>
+            <p className="text-gray-600">{t('dashboard.restaurants.loading')}</p>
           </div>
         </div>
       </DashboardLayout>
@@ -83,8 +85,8 @@ export default function RestaurantsPage() {
   return (
     <DashboardLayout>
       <PageContent
-        title={isCreatingFromSignup ? "Create Your Restaurant" : "Restaurant Management"}
-        description={isCreatingFromSignup ? "Complete your setup by creating your restaurant profile" : "Manage multiple restaurant locations, each with their own menu, tables, and data."}
+        title={isCreatingFromSignup ? t('dashboard.restaurants.createTitle') : t('dashboard.restaurants.managementTitle')}
+        description={isCreatingFromSignup ? t('dashboard.restaurants.createDescription') : t('dashboard.restaurants.managementDescription')}
       >
 
         {restaurants.length === 0 ? (
@@ -94,59 +96,59 @@ export default function RestaurantsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Building2 className="w-5 h-5" />
-                  Welcome! Let's create your restaurant
+                  {t('dashboard.restaurants.welcomeTitle')}
                 </CardTitle>
                 <CardDescription>
-                  We'll help you set up your restaurant profile and then choose a menu template to get started quickly.
+                  {t('dashboard.restaurants.welcomeDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Restaurant Name *</Label>
+                  <Label htmlFor="name">{t('dashboard.restaurants.form.name')} *</Label>
                   <Input
                     id="name"
                     value={newRestaurant.name}
                     onChange={(e) => setNewRestaurant(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Your restaurant name"
+                    placeholder={t('dashboard.restaurants.form.namePlaceholder')}
                     className="font-medium"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('dashboard.restaurants.form.description')}</Label>
                   <Textarea
                     id="description"
                     value={newRestaurant.description}
                     onChange={(e) => setNewRestaurant(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Brief description of your restaurant"
+                    placeholder={t('dashboard.restaurants.form.descriptionPlaceholder')}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="address">Address</Label>
+                  <Label htmlFor="address">{t('dashboard.restaurants.form.address')}</Label>
                   <Input
                     id="address"
                     value={newRestaurant.address}
                     onChange={(e) => setNewRestaurant(prev => ({ ...prev, address: e.target.value }))}
-                    placeholder="123 Main St, City, State"
+                    placeholder={t('dashboard.restaurants.form.addressPlaceholder')}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone">{t('dashboard.restaurants.form.phone')}</Label>
                     <Input
                       id="phone"
                       value={newRestaurant.phone}
                       onChange={(e) => setNewRestaurant(prev => ({ ...prev, phone: e.target.value }))}
-                      placeholder="(555) 123-4567"
+                      placeholder={t('dashboard.restaurants.form.phonePlaceholder')}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t('dashboard.restaurants.form.email')}</Label>
                     <Input
                       id="email"
                       type="email"
                       value={newRestaurant.email}
                       onChange={(e) => setNewRestaurant(prev => ({ ...prev, email: e.target.value }))}
-                      placeholder="contact@restaurant.com"
+                      placeholder={t('dashboard.restaurants.form.emailPlaceholder')}
                     />
                   </div>
                 </div>
@@ -156,7 +158,7 @@ export default function RestaurantsPage() {
                     disabled={!newRestaurant.name.trim() || creating}
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   >
-                    {creating ? 'Creating...' : 'Create Restaurant & Continue'}
+                    {creating ? t('dashboard.restaurants.form.creating') : t('dashboard.restaurants.form.createButton')}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -166,9 +168,9 @@ export default function RestaurantsPage() {
             <Card className="text-center py-12">
               <CardContent>
                 <div className="text-6xl mb-4">🏪</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Restaurants Yet</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('dashboard.restaurants.noRestaurantsTitle')}</h3>
                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  Create your first restaurant location to start managing menus, tables, and orders.
+                  {t('dashboard.restaurants.noRestaurantsDescription')}
                 </p>
                 <RestaurantSelector />
               </CardContent>
@@ -178,11 +180,11 @@ export default function RestaurantsPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Your Restaurants</h2>
-                <p className="text-gray-600">Select a restaurant to manage its data</p>
+                <h2 className="text-xl font-semibold text-gray-900">{t('dashboard.restaurants.yourRestaurants')}</h2>
+                <p className="text-gray-600">{t('dashboard.restaurants.selectDescription')}</p>
               </div>
               <div className="text-sm text-gray-500">
-                {restaurants.length} restaurant{restaurants.length !== 1 ? 's' : ''}
+                {restaurants.length} {restaurants.length !== 1 ? t('dashboard.restaurants.restaurantsPlural') : t('dashboard.restaurants.restaurantSingular')}
               </div>
             </div>
 

@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface POSItem {
   id: string;
@@ -19,20 +20,22 @@ interface POSMenuItemsProps {
 }
 
 export function POSMenuItems({ groupedItems, onAddToCart }: POSMenuItemsProps) {
+  const { t } = useLanguage();
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Menu Items</CardTitle>
-        <CardDescription>Click to add items to the order</CardDescription>
+        <CardTitle>{t('pos.menuItems')}</CardTitle>
+        <CardDescription>{t('pos.menuItemsDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         {Object.keys(groupedItems).length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🍽️</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Menu Items Available</h3>
-            <p className="text-gray-500 mb-4">Create your menu in the Menu Builder to start taking orders.</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('pos.noMenuItemsTitle')}</h3>
+            <p className="text-gray-500 mb-4">{t('pos.noMenuItemsDescription')}</p>
             <Button onClick={() => window.open('/dashboard/menu', '_blank')}>
-              Go to Menu Builder
+              {t('pos.goToMenuBuilder')}
             </Button>
           </div>
         ) : (

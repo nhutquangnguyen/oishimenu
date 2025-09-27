@@ -24,6 +24,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useRestaurant } from '@/contexts/RestaurantContext';
 import { getActiveOrdersByRestaurant, updateOrderStatus } from '@/lib/firestore';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface Order {
   id: string;
@@ -49,15 +50,16 @@ export interface OrderItem {
   category: string;
 }
 
-const statusConfig = {
-  pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-  preparing: { label: 'Preparing', color: 'bg-blue-100 text-blue-800', icon: ChefHat },
-  ready: { label: 'Ready', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  delivered: { label: 'Delivered', color: 'bg-gray-100 text-gray-800', icon: CheckCircle },
-  cancelled: { label: 'Cancelled', color: 'bg-red-100 text-red-800', icon: XCircle },
-};
+const getStatusConfig = (t: (key: string) => string) => ({
+  pending: { label: t('orders.status.pending'), color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+  preparing: { label: t('orders.status.preparing'), color: 'bg-blue-100 text-blue-800', icon: ChefHat },
+  ready: { label: t('orders.status.ready'), color: 'bg-green-100 text-green-800', icon: CheckCircle },
+  delivered: { label: t('orders.status.delivered'), color: 'bg-gray-100 text-gray-800', icon: CheckCircle },
+  cancelled: { label: t('orders.status.cancelled'), color: 'bg-red-100 text-red-800', icon: XCircle },
+});
 
 export function ActiveOrdersList() {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const { currentRestaurant } = useRestaurant();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -119,15 +121,15 @@ export function ActiveOrdersList() {
   const getTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return 'Just now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    
+
+    if (diffInMinutes < 1) return t('orders.time.justNow');
+    if (diffInMinutes < 60) return t('orders.time.minutesAgo').replace('{minutes}', diffInMinutes.toString());
+
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    
+    if (diffInHours < 24) return t('orders.time.hoursAgo').replace('{hours}', diffInHours.toString());
+
     const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays}d ago`;
+    return t('orders.time.daysAgo').replace('{days}', diffInDays.toString());
   };
 
   const getUrgencyLevel = (order: Order) => {
@@ -150,7 +152,7 @@ export function ActiveOrdersList() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading active orders...</p>
+          <p className="text-gray-600">{t('orders.loadingActiveOrders')}</p>
         </div>
       </div>
     );
@@ -162,24 +164,24 @@ export function ActiveOrdersList() {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
           <div>
-            <h2 className="text-lg font-semibold text-blue-900">Kitchen Dashboard</h2>
-            <p className="text-blue-700 text-sm">Active orders requiring attention</p>
+            <h2 className="text-lg font-semibold text-blue-900">{t('orders.kitchenDashboard')}</h2>
+            <p className="text-blue-700 text-sm">{t('orders.kitchenDashboardDescription')}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
             <div className="flex items-center space-x-1 sm:space-x-2">
               <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span className="hidden sm:inline">High Priority ({filteredOrders.filter(o => getUrgencyLevel(o) === 'high').length})</span>
-              <span className="sm:hidden">High ({filteredOrders.filter(o => getUrgencyLevel(o) === 'high').length})</span>
+              <span className="hidden sm:inline">{t('orders.priority.high')} ({filteredOrders.filter(o => getUrgencyLevel(o) === 'high').length})</span>
+              <span className="sm:hidden">{t('orders.priority.highShort')} ({filteredOrders.filter(o => getUrgencyLevel(o) === 'high').length})</span>
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
               <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <span className="hidden sm:inline">Medium Priority ({filteredOrders.filter(o => getUrgencyLevel(o) === 'medium').length})</span>
-              <span className="sm:hidden">Med ({filteredOrders.filter(o => getUrgencyLevel(o) === 'medium').length})</span>
+              <span className="hidden sm:inline">{t('orders.priority.medium')} ({filteredOrders.filter(o => getUrgencyLevel(o) === 'medium').length})</span>
+              <span className="sm:hidden">{t('orders.priority.mediumShort')} ({filteredOrders.filter(o => getUrgencyLevel(o) === 'medium').length})</span>
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="hidden sm:inline">Low Priority ({filteredOrders.filter(o => getUrgencyLevel(o) === 'low').length})</span>
-              <span className="sm:hidden">Low ({filteredOrders.filter(o => getUrgencyLevel(o) === 'low').length})</span>
+              <span className="hidden sm:inline">{t('orders.priority.low')} ({filteredOrders.filter(o => getUrgencyLevel(o) === 'low').length})</span>
+              <span className="sm:hidden">{t('orders.priority.lowShort')} ({filteredOrders.filter(o => getUrgencyLevel(o) === 'low').length})</span>
             </div>
           </div>
         </div>
@@ -191,7 +193,7 @@ export function ActiveOrdersList() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
-              placeholder="Search by table, customer, or order ID..."
+              placeholder={t('orders.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -200,13 +202,13 @@ export function ActiveOrdersList() {
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder={t('orders.filterByStatus')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="active">All Active</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="preparing">Preparing</SelectItem>
-            <SelectItem value="ready">Ready</SelectItem>
+            <SelectItem value="active">{t('orders.filter.allActive')}</SelectItem>
+            <SelectItem value="pending">{t('orders.status.pending')}</SelectItem>
+            <SelectItem value="preparing">{t('orders.status.preparing')}</SelectItem>
+            <SelectItem value="ready">{t('orders.status.ready')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -217,8 +219,8 @@ export function ActiveOrdersList() {
           <Card>
             <CardContent className="text-center py-12">
               <ChefHat className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No active orders</h3>
-              <p className="text-gray-500">All caught up! New orders will appear here.</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('orders.noActiveOrders')}</h3>
+              <p className="text-gray-500">{t('orders.allCaughtUp')}</p>
             </CardContent>
           </Card>
         ) : (
@@ -236,6 +238,7 @@ export function ActiveOrdersList() {
               return b.createdAt.getTime() - a.createdAt.getTime();
             })
             .map((order) => {
+              const statusConfig = getStatusConfig(t);
               const StatusIcon = statusConfig[order.status].icon;
               const urgency = getUrgencyLevel(order);
               const urgencyColor = getUrgencyColor(urgency);

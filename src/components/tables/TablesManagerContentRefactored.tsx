@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { DragDropManager, DragDropContainer } from '@/components/shared';
 import { TableOrdersSidebar } from './TableOrdersSidebar';
 import { TableItem } from './TableItem';
@@ -53,6 +54,7 @@ export function TablesManagerContentRefactored({
   onAddArea,
   onAddTable
 }: TablesManagerContentRefactoredProps) {
+  const { t } = useLanguage();
   const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(new Set());
   const [preDragCollapsedState, setPreDragCollapsedState] = useState<Set<string> | null>(null);
   const [isDraggingContainer, setIsDraggingContainer] = useState(false);
@@ -227,7 +229,7 @@ export function TablesManagerContentRefactored({
         .map(table => table.number.toLowerCase());
 
       if (areaTableNames.includes(newTableName.trim().toLowerCase())) {
-        alert(`A table named "${newTableName.trim()}" already exists in ${areaName}. Please choose a different name.`);
+        alert(t('tables.tableNameExists', { tableName: newTableName.trim(), areaName }));
         return;
       }
 
@@ -245,7 +247,7 @@ export function TablesManagerContentRefactored({
         {isAddingArea ? (
           <>
             <Input
-              placeholder="Area name (e.g., Main Dining, Patio, Bar)"
+              placeholder={t('tables.areaNamePlaceholder')}
               value={newAreaName}
               onChange={(e) => setNewAreaName(e.target.value)}
               className="flex-1"
@@ -258,7 +260,7 @@ export function TablesManagerContentRefactored({
             />
             <div className="flex space-x-2">
               <Button onClick={handleAddArea} disabled={!newAreaName.trim()} className="flex-1 sm:flex-none">
-                Add
+                {t('tables.addArea')}
               </Button>
               <Button
                 variant="outline"
@@ -268,7 +270,7 @@ export function TablesManagerContentRefactored({
                 }}
                 className="flex-1 sm:flex-none"
               >
-                Cancel
+{t('common.cancel')}
               </Button>
             </div>
           </>
@@ -278,8 +280,8 @@ export function TablesManagerContentRefactored({
             className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Add Area</span>
-            <span className="sm:hidden">Add Area</span>
+            <span className="hidden sm:inline">{t('tables.addArea')}</span>
+            <span className="sm:hidden">{t('tables.addArea')}</span>
           </Button>
         )}
       </div>
@@ -288,9 +290,9 @@ export function TablesManagerContentRefactored({
       {areas.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
           <div className="text-gray-400 mb-4">🍽️</div>
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">No areas yet</h3>
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">{t('tables.noAreasYet')}</h3>
           <p className="text-gray-500 text-center">
-            Start by adding your first dining area to organize your restaurant tables
+            {t('tables.addFirstAreaDescription')}
           </p>
         </div>
       ) : (
@@ -306,14 +308,14 @@ export function TablesManagerContentRefactored({
               {collapsedAreas.size === areas.length ? (
                 <>
                   <ChevronDown className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Expand All</span>
-                  <span className="sm:hidden ml-1">Expand</span>
+                  <span className="hidden sm:inline">{t('tables.expandAll')}</span>
+                  <span className="sm:hidden ml-1">{t('tables.expand')}</span>
                 </>
               ) : (
                 <>
                   <ChevronUp className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Collapse All</span>
-                  <span className="sm:hidden ml-1">Collapse</span>
+                  <span className="hidden sm:inline">{t('tables.collapseAll')}</span>
+                  <span className="sm:hidden ml-1">{t('tables.collapse')}</span>
                 </>
               )}
             </Button>
@@ -355,7 +357,7 @@ export function TablesManagerContentRefactored({
                 headerActions={
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     <div className="text-xs sm:text-sm text-gray-600">
-                      <span className="hidden sm:inline">{container.items.length} tables • {areaOrders} orders</span>
+                      <span className="hidden sm:inline">{container.items.length} {t('tables.tables')} • {areaOrders} {t('tables.orders')}</span>
                       <span className="sm:hidden">{container.items.length}T • {areaOrders}O</span>
                     </div>
 
@@ -367,9 +369,9 @@ export function TablesManagerContentRefactored({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="closed">Closed</SelectItem>
-                            <SelectItem value="maintenance">Maintenance</SelectItem>
+                            <SelectItem value="active">{t('tables.status.active')}</SelectItem>
+                            <SelectItem value="closed">{t('tables.status.closed')}</SelectItem>
+                            <SelectItem value="maintenance">{t('tables.status.maintenance')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <Button
@@ -408,7 +410,7 @@ export function TablesManagerContentRefactored({
                       isAddingTable === container.id ? (
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                           <Input
-                            placeholder="Table name"
+                            placeholder={t('tables.tableNamePlaceholder')}
                             value={newTableName}
                             onChange={(e) => setNewTableName(e.target.value)}
                             className="w-full sm:w-32 h-8"
@@ -427,7 +429,7 @@ export function TablesManagerContentRefactored({
                               disabled={!newTableName.trim()}
                               className="flex-1 sm:flex-none"
                             >
-                              Add
+{t('tables.add')}
                             </Button>
                             <Button
                               variant="outline"
@@ -438,7 +440,7 @@ export function TablesManagerContentRefactored({
                               }}
                               className="flex-1 sm:flex-none"
                             >
-                              Cancel
+              {t('common.cancel')}
                             </Button>
                           </div>
                         </div>
@@ -450,8 +452,8 @@ export function TablesManagerContentRefactored({
                           className="text-green-600 hover:bg-green-50 border-green-200 w-full sm:w-auto"
                         >
                           <Plus className="w-4 h-4 sm:mr-1" />
-                          <span className="hidden sm:inline">Add Table</span>
-                          <span className="sm:hidden ml-1">Add</span>
+                          <span className="hidden sm:inline">{t('tables.addTable')}</span>
+                          <span className="sm:hidden ml-1">{t('tables.add')}</span>
                         </Button>
                       )
                     )}
@@ -460,12 +462,12 @@ export function TablesManagerContentRefactored({
                 emptyState={
                   <div className="text-center py-8 text-gray-500">
                     <div className="text-gray-300 mb-2">🍽️</div>
-                    <p className="text-sm mb-4">No tables in this area yet</p>
+                    <p className="text-sm mb-4">{t('tables.noTablesInArea')}</p>
                     {onAddTable && (
                       isAddingTable === container.id ? (
                         <div className="flex items-center space-x-2">
                           <Input
-                            placeholder="Table name"
+                            placeholder={t('tables.tableNamePlaceholder')}
                             value={newTableName}
                             onChange={(e) => setNewTableName(e.target.value)}
                             className="w-40"
@@ -492,7 +494,7 @@ export function TablesManagerContentRefactored({
                               setNewTableName('');
                             }}
                           >
-                            Cancel
+            {t('common.cancel')}
                           </Button>
                         </div>
                       ) : (
@@ -503,11 +505,11 @@ export function TablesManagerContentRefactored({
                           className="text-blue-600 hover:bg-blue-50"
                         >
                           <Plus className="w-4 h-4 mr-1" />
-                          Add First Table
+                          {t('tables.addFirstTable')}
                         </Button>
                       )
                     )}
-                    <p className="text-xs mt-4 text-gray-400">Or drop tables here to move them to {container.name}</p>
+                    <p className="text-xs mt-4 text-gray-400">{t('tables.dropTablesHere', { areaName: container.name })}</p>
                   </div>
                 }
               >

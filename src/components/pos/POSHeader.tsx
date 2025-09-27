@@ -1,14 +1,18 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
+
 interface POSHeaderProps {
   isDisabled: boolean;
 }
 
 export function POSHeader({ isDisabled }: POSHeaderProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="mb-6">
-      <h1 className="text-3xl font-bold text-gray-900">Point of Sale</h1>
-      <p className="text-gray-600">Create orders manually for walk-in customers or phone orders</p>
+      <h1 className="text-3xl font-bold text-gray-900">{t('pos.title')}</h1>
+      <p className="text-gray-600">{t('pos.description')}</p>
       
       {isDisabled && (
         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -20,10 +24,10 @@ export function POSHeader({ isDisabled }: POSHeaderProps) {
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">
-                Account Disabled
+                {t('pos.accountDisabled')}
               </h3>
               <div className="mt-2 text-sm text-red-700">
-                <p>Your account has been disabled. You cannot create orders. Please contact support for assistance.</p>
+                <p>{t('pos.accountDisabledMessage')}</p>
               </div>
             </div>
           </div>

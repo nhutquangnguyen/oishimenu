@@ -9,6 +9,7 @@ import { useRestaurant } from '@/contexts/RestaurantContext';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getMenuItems, getTables } from '@/lib/firestore';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface POSItem {
   id: string;
@@ -29,6 +30,7 @@ interface CartItem {
 }
 
 export function POSInterface() {
+  const { t } = useLanguage();
   const { user, isDisabled } = useAuth();
   const { currentRestaurant } = useRestaurant();
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -142,7 +144,7 @@ export function POSInterface() {
           emoji: item.emoji
         })),
         tableNumber: tableNumber === 'walk-in' ? null : tableNumber,
-        customerName: customerName || 'Walk-in Customer',
+        customerName: customerName || t('pos.walkInCustomer'),
         paymentMethod,
         status: 'completed',
         total: cart.reduce((total, item) => total + (item.price * item.quantity), 0),
@@ -163,7 +165,7 @@ export function POSInterface() {
       
     } catch (error) {
       console.error('Error creating order:', error);
-      alert('Failed to create order. Please try again.');
+      alert(t('pos.orderCreationFailed'));
     } finally {
       setIsCreating(false);
     }
@@ -240,7 +242,7 @@ export function POSInterface() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading POS system...</p>
+            <p className="text-gray-600">{t('pos.loadingPOS')}</p>
           </div>
         </div>
       </div>

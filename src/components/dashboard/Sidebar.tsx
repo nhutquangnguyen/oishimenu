@@ -16,21 +16,23 @@ import {
   Building2,
   Shield,
   ChevronDown,
-  X
+  X,
+  Languages
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRestaurant } from '@/contexts/RestaurantContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Restaurants', href: '/dashboard/restaurants', icon: Building2 },
-  { name: 'Menu Builder', href: '/dashboard/menu', icon: Menu },
-  { name: 'POS', href: '/dashboard/pos', icon: CreditCard },
-  { name: 'Orders', href: '/dashboard/orders', icon: ShoppingCart },
-  { name: 'Tables', href: '/dashboard/tables', icon: Table },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+const getNavigation = (t: (key: string) => string) => [
+  { name: t('dashboard.nav.dashboard'), href: '/dashboard', icon: LayoutDashboard },
+  { name: t('dashboard.nav.restaurants'), href: '/dashboard/restaurants', icon: Building2 },
+  { name: t('dashboard.nav.menuBuilder'), href: '/dashboard/menu', icon: Menu },
+  { name: t('dashboard.nav.pos'), href: '/dashboard/pos', icon: CreditCard },
+  { name: t('dashboard.nav.orders'), href: '/dashboard/orders', icon: ShoppingCart },
+  { name: t('dashboard.nav.tables'), href: '/dashboard/tables', icon: Table },
+  { name: t('dashboard.nav.settings'), href: '/dashboard/settings', icon: Settings },
 ];
 
 interface SidebarProps {
@@ -42,6 +44,9 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { currentRestaurant, restaurants, setCurrentRestaurant } = useRestaurant();
+  const { t, language, setLanguage } = useLanguage();
+
+  const navigation = getNavigation(t);
 
   const handleNavClick = () => {
     if (onClose) {
@@ -61,7 +66,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 flex flex-col bg-white border-r transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+        "fixed inset-y-0 left-0 z-50 w-64 flex flex-col bg-white border-r transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 h-full",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="flex h-16 items-center px-6 border-b">
@@ -134,7 +139,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         </div>
       </div>
       
-      <nav className="flex-1 space-y-1 px-4 py-4">
+      <nav className="flex-1 space-y-1 px-4 py-4 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -161,7 +166,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         })}
       </nav>
       
-      <div className="border-t p-4">
+      <div className="border-t p-4 mt-auto flex-shrink-0">
         <div className="flex items-center space-x-3 mb-4">
           <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
             {user?.email?.charAt(0).toUpperCase()}
@@ -170,9 +175,26 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
             <p className="text-sm font-medium text-gray-900 truncate">
               {user?.email}
             </p>
-            <p className="text-xs text-gray-500">Restaurant Owner</p>
+            <p className="text-xs text-gray-500">{t('dashboard.nav.restaurantOwner') || 'Restaurant Owner'}</p>
           </div>
         </div>
+
+        {/* Language Switcher */}
+        <div className="mb-3">
+          <Select value={language} onValueChange={(value: 'en' | 'vi') => setLanguage(value)}>
+            <SelectTrigger className="w-full h-8 text-xs">
+              <div className="flex items-center">
+                <Languages className="w-3 h-3 mr-2" />
+                <SelectValue />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="en">🇺🇸 English</SelectItem>
+              <SelectItem value="vi">🇻🇳 Tiếng Việt</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <Button
           variant="ghost"
           size="sm"
@@ -180,7 +202,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           className="w-full justify-start text-gray-700 hover:text-red-600 hover:bg-red-50"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          Sign out
+          {t('dashboard.nav.signOut') || 'Sign out'}
         </Button>
         </div>
       </div>

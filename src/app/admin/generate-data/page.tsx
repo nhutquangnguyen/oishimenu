@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { generateDemoOrders } from '@/lib/firestore';
+import { collection, getDocs, deleteDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
@@ -10,6 +12,7 @@ import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 export default function GenerateDataPage() {
   const { admin, isAdmin, isLoading: authLoading } = useAdminAuth();
   const [loading, setLoading] = useState(false);
+  const [clearingData, setClearingData] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const handleGenerateData = async () => {
@@ -36,6 +39,43 @@ export default function GenerateDataPage() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleClearAllOrders = async () => {
+    if (!admin?.email) {
+      setResult({ success: false, message: 'Admin not authenticated' });
+      return;
+    }
+
+    setClearingData(true);
+    setResult(null);
+
+    try {
+      // Get all orders
+      const ordersSnapshot = await getDocs(collection(db, 'orders'));
+
+      // Delete all orders
+      const deletePromises = ordersSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+
+      // Also clear analytics cache
+      const analyticsSnapshot = await getDocs(collection(db, 'analytics'));
+      const analyticsDeletePromises = analyticsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(analyticsDeletePromises);
+
+      setResult({
+        success: true,
+        message: `Successfully cleared ${ordersSnapshot.size} orders and analytics data`
+      });
+    } catch (error) {
+      console.error('Error clearing data:', error);
+      setResult({
+        success: false,
+        message: 'Failed to clear data. Check console for details.'
+      });
+    } finally {
+      setClearingData(false);
     }
   };
 
@@ -96,20 +136,38 @@ export default function GenerateDataPage() {
               </div>
             )}
 
-            <Button 
-              onClick={handleGenerateData} 
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Generating Demo Data...
-                </>
-              ) : (
-                'Generate 50 Demo Orders'
-              )}
-            </Button>
+            <div className="space-y-3">
+              <Button
+                onClick={handleGenerateData}
+                disabled={loading || clearingData}
+                className="w-full"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Generating Demo Data...
+                  </>
+                ) : (
+                  'Generate 50 Demo Orders'
+                )}
+              </Button>
+
+              <Button
+                onClick={handleClearAllOrders}
+                disabled={loading || clearingData}
+                variant="destructive"
+                className="w-full"
+              >
+                {clearingData ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Clearing All Data...
+                  </>
+                ) : (
+                  'Clear All Orders & Analytics'
+                )}
+              </Button>
+            </div>
 
 
             <div className="text-sm text-gray-600">
