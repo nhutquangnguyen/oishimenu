@@ -34,12 +34,6 @@ export default function SignUpPage() {
     setLoading(true);
     setError('');
 
-    if (!restaurantName.trim()) {
-      setError('Restaurant name is required');
-      setLoading(false);
-      return;
-    }
-
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -54,8 +48,10 @@ export default function SignUpPage() {
 
     try {
       await signUp(email, password);
-      // Store restaurant name for post-signup processing
-      localStorage.setItem('pendingRestaurantName', restaurantName);
+      // Store restaurant name for post-signup processing (if provided)
+      if (restaurantName.trim()) {
+        localStorage.setItem('pendingRestaurantName', restaurantName);
+      }
       // Clear the businessName from landing page
       localStorage.removeItem('businessName');
       // Redirect to dashboard
@@ -71,16 +67,12 @@ export default function SignUpPage() {
     setLoading(true);
     setError('');
 
-    if (!restaurantName.trim()) {
-      setError('Restaurant name is required');
-      setLoading(false);
-      return;
-    }
-
     try {
       await signInWithGoogle();
-      // Store restaurant name for post-signup processing
-      localStorage.setItem('pendingRestaurantName', restaurantName);
+      // Store restaurant name for post-signup processing (if provided)
+      if (restaurantName.trim()) {
+        localStorage.setItem('pendingRestaurantName', restaurantName);
+      }
       // Clear the businessName from landing page
       localStorage.removeItem('businessName');
       // Redirect to dashboard
@@ -113,15 +105,14 @@ export default function SignUpPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="restaurantName">Restaurant Name</Label>
+                <Label htmlFor="restaurantName">Restaurant Name (Optional)</Label>
                 <Input
                   id="restaurantName"
                   type="text"
-                  placeholder="Enter your restaurant name"
+                  placeholder="Enter your restaurant name (will default to 'My Restaurant')"
                   value={restaurantName}
                   onChange={(e) => setRestaurantName(e.target.value)}
                   className="font-medium"
-                  required
                 />
               </div>
 

@@ -72,21 +72,25 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
         });
 
         setRestaurants(userRestaurants);
-        
+
         // If restaurants exist, set the current one
         if (userRestaurants.length > 0) {
           // Try to restore the previously selected restaurant from localStorage
           const savedRestaurantId = localStorage.getItem(`selectedRestaurant_${user.uid}`);
-          const savedRestaurant = savedRestaurantId 
+          const savedRestaurant = savedRestaurantId
             ? userRestaurants.find(r => r.id === savedRestaurantId)
             : null;
-          
+
           if (savedRestaurant) {
             setCurrentRestaurantWithPersistence(savedRestaurant);
           } else if (!currentRestaurant) {
             // Set current restaurant to the first one if none selected and no saved preference
             setCurrentRestaurantWithPersistence(userRestaurants[0]);
           }
+        } else {
+          // If user has no restaurants, automatically create one
+          console.log('🏪 User has no restaurants, creating default setup...');
+          await createDefaultSetup();
         }
       } catch (error) {
         console.error('Error loading restaurants:', error);
@@ -186,13 +190,17 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
         console.warn('⚠️  Migration failed, but restaurant was created successfully:', migrationError);
       }
 
-      // 5. Clear the pending restaurant name after successful setup
+      // 5. Update the restaurants state with the new restaurant
+      setRestaurants([createdRestaurant]);
+      setCurrentRestaurantWithPersistence(createdRestaurant);
+
+      // 6. Clear the pending restaurant name after successful setup
       if (pendingRestaurantName) {
         localStorage.removeItem('pendingRestaurantName');
         console.log('✅ Restaurant created with name:', pendingRestaurantName);
       }
 
-      console.log('Default setup created successfully');
+      console.log('✅ Default setup created successfully - restaurant ready!');
 
     } catch (error) {
       console.error('Error creating default setup:', error);

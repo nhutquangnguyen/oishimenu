@@ -127,16 +127,8 @@ export default function DashboardPage() {
     checkOnboarding();
   }, [user?.uid, currentRestaurant?.id, router]);
 
-  // Check if user has no restaurants and redirect to restaurant creation
-  useEffect(() => {
-    if (!user?.uid || restaurantsLoading) return;
-
-    // If user has no restaurants, redirect to restaurant management page
-    if (restaurants.length === 0) {
-      router.push('/dashboard/restaurants');
-      return;
-    }
-  }, [user?.uid, restaurants, restaurantsLoading, router]);
+  // Note: Removed redirect to /dashboard/restaurants as restaurants are now auto-created
+  // Users will always have at least one restaurant after login
 
   const handleAddMenuItem = () => {
     router.push('/dashboard/menu');
