@@ -6,6 +6,7 @@ import { Restaurant } from '@/types/restaurant';
 import { doc, getDoc, setDoc, addDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { checkNeedsMigration, migrateUserDataToRestaurant } from '@/lib/migration';
+import { createSampleMenu } from '@/lib/sample-menu-templates';
 
 interface RestaurantContextType {
   restaurants: Restaurant[];
@@ -72,15 +73,8 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
 
         setRestaurants(userRestaurants);
         
-        // If no restaurants exist, check for migration and create default setup
-        if (userRestaurants.length === 0) {
-          // Check if user has legacy data that needs migration
-          const needsMigration = await checkNeedsMigration(user.uid);
-          if (needsMigration) {
-            console.log('🔄 Detected legacy data, will migrate during restaurant creation...');
-          }
-          await createDefaultSetup();
-        } else if (userRestaurants.length > 0) {
+        // If restaurants exist, set the current one
+        if (userRestaurants.length > 0) {
           // Try to restore the previously selected restaurant from localStorage
           const savedRestaurantId = localStorage.getItem(`selectedRestaurant_${user.uid}`);
           const savedRestaurant = savedRestaurantId 
@@ -110,11 +104,14 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
 
     try {
       console.log('Creating default setup for new user...');
-      
+
+      // Check for pending restaurant name from signup flow
+      const pendingRestaurantName = localStorage.getItem('pendingRestaurantName');
+
       // 1. Create default restaurant
       const now = new Date();
       const defaultRestaurant: Omit<Restaurant, 'id'> = {
-        name: 'My Restaurant',
+        name: pendingRestaurantName || 'My Restaurant',
         description: 'Welcome to your new restaurant!',
         address: '',
         phone: '',
@@ -158,62 +155,14 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
 
       await setDoc(doc(db, 'tables', restaurantId), defaultTablesData);
 
-      // 3. Create default menu
+      // 3. Create basic restaurant data for the menu (without categories - will be added after template selection)
       const defaultMenuData = {
-        categories: [
-          {
-            id: '1',
-            name: 'Appetizers',
-            description: 'Start your meal with our delicious appetizers',
-            order: 0,
-            items: [
-              {
-                id: '1',
-                name: 'Caesar Salad',
-                description: 'Fresh romaine lettuce with caesar dressing',
-                price: 8.99,
-                emoji: '🥗',
-                category: 'Appetizers'
-              },
-              {
-                id: '2',
-                name: 'Soup of the Day',
-                description: 'Ask your server about today\'s special soup',
-                price: 6.99,
-                emoji: '🍲',
-                category: 'Appetizers'
-              }
-            ]
-          },
-          {
-            id: '2',
-            name: 'Main Courses',
-            description: 'Our signature dishes',
-            order: 1,
-            items: [
-              {
-                id: '3',
-                name: 'Grilled Chicken',
-                description: 'Tender grilled chicken breast with herbs',
-                price: 16.99,
-                emoji: '🍗',
-                category: 'Main Courses'
-              },
-              {
-                id: '4',
-                name: 'Pasta Carbonara',
-                description: 'Creamy pasta with bacon and parmesan',
-                price: 14.99,
-                emoji: '🍝',
-                category: 'Main Courses'
-              }
-            ]
-          }
-        ],
+        categories: [],
+        optionGroups: [],
         isPublic: true,
         theme: 'blue',
         restaurant: {
-          name: 'My Restaurant',
+          name: pendingRestaurantName || 'My Restaurant',
           logo: '🏪',
           description: 'Welcome to your new restaurant!',
           address: '',
@@ -235,6 +184,12 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
         }
       } catch (migrationError) {
         console.warn('⚠️  Migration failed, but restaurant was created successfully:', migrationError);
+      }
+
+      // 5. Clear the pending restaurant name after successful setup
+      if (pendingRestaurantName) {
+        localStorage.removeItem('pendingRestaurantName');
+        console.log('✅ Restaurant created with name:', pendingRestaurantName);
       }
 
       console.log('Default setup created successfully');
@@ -263,6 +218,25 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
         id: restaurantId,
         ...newRestaurant,
       };
+
+      // Create empty menu structure (will be populated after template selection)
+      const defaultMenuData = {
+        categories: [],
+        optionGroups: [],
+        isPublic: true,
+        theme: restaurantData.theme || 'blue',
+        restaurant: {
+          name: restaurantData.name,
+          logo: restaurantData.logo || '🏪',
+          description: restaurantData.description || '',
+          address: restaurantData.address || '',
+          phone: restaurantData.phone || '',
+          hours: 'Mon-Sun: 11:00 AM - 10:00 PM'
+        },
+        lastUpdated: now
+      };
+
+      await setDoc(doc(db, 'menus', restaurantId), defaultMenuData);
 
       setRestaurants(prev => [createdRestaurant, ...prev]);
       setCurrentRestaurantWithPersistence(createdRestaurant);

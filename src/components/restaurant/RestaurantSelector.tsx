@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -8,10 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Building2, 
-  Plus, 
-  Settings, 
+import {
+  Building2,
+  Plus,
+  Settings,
   Check,
   MapPin,
   Phone,
@@ -23,14 +24,15 @@ import { Restaurant } from '@/types/restaurant';
 import Link from 'next/link';
 
 export function RestaurantSelector() {
-  const { 
-    restaurants, 
-    currentRestaurant, 
-    setCurrentRestaurant, 
-    createRestaurant, 
-    loading 
+  const {
+    restaurants,
+    currentRestaurant,
+    setCurrentRestaurant,
+    createRestaurant,
+    loading
   } = useRestaurant();
-  
+  const router = useRouter();
+
   const [isCreating, setIsCreating] = useState(false);
   const [newRestaurant, setNewRestaurant] = useState({
     name: '',
@@ -44,7 +46,7 @@ export function RestaurantSelector() {
     if (!newRestaurant.name.trim()) return;
 
     try {
-      await createRestaurant({
+      const restaurantId = await createRestaurant({
         name: newRestaurant.name,
         description: newRestaurant.description,
         address: newRestaurant.address,
@@ -63,6 +65,9 @@ export function RestaurantSelector() {
         email: '',
       });
       setIsCreating(false);
+
+      // Redirect to template selection for new restaurant
+      router.push('/dashboard/onboarding/templates');
     } catch (error) {
       console.error('Error creating restaurant:', error);
     }

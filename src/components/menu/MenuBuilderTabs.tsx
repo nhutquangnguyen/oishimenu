@@ -54,6 +54,8 @@ interface MenuBuilderTabsProps {
   onToggleCategoryExpanded: (categoryId: string) => void;
   logo?: string;
   onLogoChange: (logo: string | undefined) => void;
+  showPoweredBy: boolean;
+  setShowPoweredBy: (show: boolean) => void;
 }
 
 export function MenuBuilderTabs({
@@ -103,19 +105,24 @@ export function MenuBuilderTabs({
   expandedCategories,
   onToggleCategoryExpanded,
   logo,
-  onLogoChange
+  onLogoChange,
+  showPoweredBy,
+  setShowPoweredBy
 }: MenuBuilderTabsProps) {
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <TabsList className="grid w-full grid-cols-3 mb-6">
-        <TabsTrigger value="builder" className="text-sm font-medium">
-          🏗️ Builder
+      <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6">
+        <TabsTrigger value="builder" className="text-xs sm:text-sm font-medium px-2 sm:px-4">
+          <span className="hidden sm:inline">🏗️ Builder</span>
+          <span className="sm:hidden">🏗️</span>
         </TabsTrigger>
-        <TabsTrigger value="options" className="text-sm font-medium">
-          ⚙️ Options
+        <TabsTrigger value="options" className="text-xs sm:text-sm font-medium px-2 sm:px-4">
+          <span className="hidden sm:inline">⚙️ Options</span>
+          <span className="sm:hidden">⚙️</span>
         </TabsTrigger>
-        <TabsTrigger value="preview" className="text-sm font-medium">
-          🎨 Brand
+        <TabsTrigger value="preview" className="text-xs sm:text-sm font-medium px-2 sm:px-4">
+          <span className="hidden sm:inline">🎨 Brand</span>
+          <span className="sm:hidden">🎨</span>
         </TabsTrigger>
       </TabsList>
 
@@ -181,6 +188,8 @@ export function MenuBuilderTabs({
           onEmbedWebsite={onEmbedWebsite}
           logo={logo}
           onLogoChange={onLogoChange}
+          showPoweredBy={showPoweredBy}
+          setShowPoweredBy={setShowPoweredBy}
         />
       </TabsContent>
 

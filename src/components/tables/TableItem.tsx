@@ -102,16 +102,16 @@ export function TableItem({
         className="hover:shadow-md transition-shadow cursor-pointer group"
         onClick={() => onTableClick(table)}
       >
-        <CardContent className="p-2">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              <div className="text-lg font-bold text-gray-800">
+        <CardContent className="p-2 sm:p-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 mb-2">
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
+              <div className="text-base sm:text-lg font-bold text-gray-800">
                 {table.number}
               </div>
               {isEditingStatus ? (
-                <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                   <Select value={editStatus} onValueChange={setEditStatus}>
-                    <SelectTrigger className="w-24 h-6 text-xs">
+                    <SelectTrigger className="w-20 sm:w-24 h-6 text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -125,7 +125,7 @@ export function TableItem({
                     size="sm"
                     variant="outline"
                     onClick={handleSaveStatus}
-                    className="h-5 w-5 p-0"
+                    className="h-6 w-6 p-0"
                   >
                     <Check className="h-3 w-3" />
                   </Button>
@@ -133,7 +133,7 @@ export function TableItem({
                     size="sm"
                     variant="outline"
                     onClick={handleCancelStatus}
-                    className="h-5 w-5 p-0"
+                    className="h-6 w-6 p-0"
                   >
                     <X className="h-3 w-3" />
                   </Button>
@@ -148,13 +148,14 @@ export function TableItem({
                   }}
                 >
                   {getStatusIcon(table.status)}
-                  <span className="capitalize">{table.status}</span>
+                  <span className="capitalize hidden sm:inline">{table.status}</span>
+                  <span className="capitalize sm:hidden">{table.status.charAt(0).toUpperCase()}</span>
                   <Edit className="w-2 h-2 ml-1 opacity-50" />
                 </Badge>
               )}
             </div>
 
-            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
               <Button
                 variant="outline"
                 size="sm"
@@ -180,10 +181,10 @@ export function TableItem({
             </div>
           </div>
 
-          <div className="space-y-1 text-xs text-gray-600">
-            <div className="flex items-center justify-between">
+          <div className="space-y-1 text-xs sm:text-sm text-gray-600">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-1 sm:space-y-0">
               {isEditingCapacity ? (
-                <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                   <Users className="w-3 h-3" />
                   <Input
                     value={editCapacity}
@@ -198,17 +199,17 @@ export function TableItem({
                     size="sm"
                     variant="outline"
                     onClick={handleSaveCapacity}
-                    className="h-4 w-4 p-0 ml-1"
+                    className="h-5 w-5 p-0 ml-1"
                   >
-                    <Check className="h-2 w-2" />
+                    <Check className="h-3 w-3" />
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={handleCancelCapacity}
-                    className="h-4 w-4 p-0"
+                    className="h-5 w-5 p-0"
                   >
-                    <X className="h-2 w-2" />
+                    <X className="h-3 w-3" />
                   </Button>
                 </div>
               ) : (

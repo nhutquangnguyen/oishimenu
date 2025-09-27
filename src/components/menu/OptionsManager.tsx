@@ -235,17 +235,18 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Menu Options</h2>
-          <p className="text-gray-600">Manage sizes, toppings, and other options for your menu items</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Menu Options</h2>
+          <p className="text-gray-600 text-sm sm:text-base">Manage sizes, toppings, and other options for your menu items</p>
         </div>
         <Button
           onClick={() => setIsCreatingGroup(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Option Group
+          <span className="hidden sm:inline">Add Option Group</span>
+          <span className="sm:hidden">Add Group</span>
         </Button>
       </div>
 
@@ -487,22 +488,22 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
           optionGroups.map((group) => (
             <Card key={group.id}>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center space-x-2">
-                      <span>{group.name}</span>
-                      <Badge variant={group.type === 'single' ? 'default' : 'secondary'}>
-                        {group.type === 'single' ? 'Single Choice' : 'Multiple Choice'}
+                <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="flex flex-wrap items-center gap-2">
+                      <span className="truncate">{group.name}</span>
+                      <Badge variant={group.type === 'single' ? 'default' : 'secondary'} className="text-xs">
+                        {group.type === 'single' ? 'Single' : 'Multiple'}
                       </Badge>
                       {group.isRequired && (
-                        <Badge variant="destructive">Required</Badge>
+                        <Badge variant="destructive" className="text-xs">Required</Badge>
                       )}
                     </CardTitle>
                     {group.description && (
-                      <CardDescription>{group.description}</CardDescription>
+                      <CardDescription className="mt-1">{group.description}</CardDescription>
                     )}
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2">
                     <Button
                       size="sm"
                       variant="outline"
@@ -510,9 +511,10 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
                         console.log('🖱️ Edit button clicked for group:', group.id);
                         editOptionGroup(group);
                       }}
+                      className="w-full sm:w-auto"
                     >
-                      <Edit className="w-4 h-4 mr-1" />
-                      Edit
+                      <Edit className="w-4 h-4 sm:mr-1" />
+                      <span className="hidden sm:inline ml-1">Edit</span>
                     </Button>
                     <Button
                       size="sm"
@@ -521,14 +523,16 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
                         setSelectedGroupId(group.id);
                         setIsCreatingOption(true);
                       }}
+                      className="w-full sm:w-auto"
                     >
-                      <Plus className="w-4 h-4 mr-1" />
-                      Add Option
+                      <Plus className="w-4 h-4 sm:mr-1" />
+                      <span className="hidden sm:inline ml-1">Add</span>
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => deleteOptionGroup(group.id)}
+                      className="w-full sm:w-auto"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -560,10 +564,10 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
                 ) : (
                   <div className="space-y-2">
                     {group.options.map((option) => (
-                      <div key={option.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium">{option.name}</span>
+                      <div key={option.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <span className="font-medium truncate">{option.name}</span>
                             {option.isDefault && (
                               <Badge variant="outline" className="text-xs">Default</Badge>
                             )}
@@ -575,11 +579,12 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
                             {option.price > 0 ? `+$${option.price.toFixed(2)}` : 'No additional cost'}
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center gap-1">
                           <Button
                             size="sm"
                             variant="ghost"
                             onClick={() => toggleOptionAvailability(group.id, option.id)}
+                            className="h-8 w-8 p-0"
                           >
                             {option.isAvailable ? (
                               <Check className="w-4 h-4 text-green-600" />
@@ -591,6 +596,7 @@ export function OptionsManager({ optionGroups, setOptionGroups, categories, setC
                             size="sm"
                             variant="ghost"
                             onClick={() => deleteOption(group.id, option.id)}
+                            className="h-8 w-8 p-0"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>

@@ -53,10 +53,10 @@ export default function SignInPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Smartphone className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">Smart Menu AI</span>
+            <span className="text-2xl font-bold text-gray-900">OishiMenu</span>
           </div>
           <p className="text-gray-600">Sign in to your restaurant dashboard</p>
         </div>

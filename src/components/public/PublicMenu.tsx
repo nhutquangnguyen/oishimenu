@@ -17,7 +17,7 @@ import { NoMenuState } from './NoMenuState';
 export function PublicMenu({ restaurantId }: { restaurantId: string }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [menuData, setMenuData] = useState<{ categories: MenuCategory[]; isPublic: boolean; theme: string; restaurant?: any } | null>(null);
+  const [menuData, setMenuData] = useState<{ categories: MenuCategory[]; isPublic: boolean; theme: string; restaurant?: any; showPoweredBy?: boolean } | null>(null);
   const [optionGroups, setOptionGroups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +64,8 @@ export function PublicMenu({ restaurantId }: { restaurantId: string }) {
                 categories: data.categories || [],
                 isPublic: data.isPublic || false,
                 theme: data.theme || 'blue',
-                restaurant: data.restaurant
+                restaurant: data.restaurant,
+                showPoweredBy: data.showPoweredBy !== false // Default to true unless explicitly disabled
               };
               
               // Load option groups
@@ -287,9 +288,23 @@ export function PublicMenu({ restaurantId }: { restaurantId: string }) {
 
         {/* Footer */}
         <div className="mt-16 text-center py-8 border-t border-gray-200">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-sm mb-3">
             We hope you enjoy your meal. 🍽️
           </p>
+          {/* Show powered by footer if not disabled */}
+          {menuData.showPoweredBy !== false && (
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-4">
+              <span className="font-medium">Powered by</span>
+              <a
+                href="https://oishimenu.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-indigo-600 hover:text-indigo-700 font-bold text-base transition-colors duration-200 hover:scale-105 transform"
+              >
+                OishiMenu
+              </a>
+            </div>
+          )}
         </div>
       </div>
 

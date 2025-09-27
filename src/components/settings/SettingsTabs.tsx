@@ -12,11 +12,23 @@ export function SettingsTabs() {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="profile">Profile</TabsTrigger>
-        <TabsTrigger value="subscription">Subscription</TabsTrigger>
-        <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        <TabsTrigger value="security">Security</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+        <TabsTrigger value="profile" className="text-xs sm:text-sm">
+          <span className="hidden sm:inline">Profile</span>
+          <span className="sm:hidden">Profile</span>
+        </TabsTrigger>
+        <TabsTrigger value="subscription" className="text-xs sm:text-sm">
+          <span className="hidden sm:inline">Subscription</span>
+          <span className="sm:hidden">Plan</span>
+        </TabsTrigger>
+        <TabsTrigger value="notifications" className="text-xs sm:text-sm">
+          <span className="hidden sm:inline">Notifications</span>
+          <span className="sm:hidden">Notify</span>
+        </TabsTrigger>
+        <TabsTrigger value="security" className="text-xs sm:text-sm">
+          <span className="hidden sm:inline">Security</span>
+          <span className="sm:hidden">Security</span>
+        </TabsTrigger>
       </TabsList>
 
       {/* Profile Settings */}

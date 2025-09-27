@@ -2,11 +2,10 @@
 
 import { LandingPageNavigation } from '@/components/marketing/LandingPageNavigation';
 import { LandingPageHero } from '@/components/marketing/LandingPageHero';
-import { LandingPageRevenue } from '@/components/marketing/LandingPageRevenue';
-import { LandingPageFeatures } from '@/components/marketing/LandingPageFeatures';
-import { LandingPageBenefits } from '@/components/marketing/LandingPageBenefits';
+import { LandingPageSocialProof } from '@/components/marketing/LandingPageSocialProof';
 import { LandingPageHowItWorks } from '@/components/marketing/LandingPageHowItWorks';
-import { LandingPageTestimonials } from '@/components/marketing/LandingPageTestimonials';
+import { LandingPageValueProps } from '@/components/marketing/LandingPageValueProps';
+import { LandingPagePricing } from '@/components/marketing/LandingPagePricing';
 import { LandingPageCTA } from '@/components/marketing/LandingPageCTA';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -17,11 +16,10 @@ export default function Home() {
     <div className="min-h-screen">
       <LandingPageNavigation />
       <LandingPageHero />
-      <LandingPageRevenue />
-      <LandingPageFeatures />
-      <LandingPageBenefits />
       <LandingPageHowItWorks />
-      <LandingPageTestimonials />
+      <LandingPageSocialProof />
+      <LandingPageValueProps />
+      <LandingPagePricing />
       <LandingPageCTA />
       
       {/* Footer */}

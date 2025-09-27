@@ -71,15 +71,15 @@ export function MenuBuilderContent({
     <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd} collisionDetection={closestCenter}>
       <div className="space-y-6">
         {/* Add Category Button and Collapse Controls */}
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+          <div className="w-full sm:w-auto">
             {isAddingCategory ? (
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 <Input
                   placeholder="Category name"
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
-                  className="w-64"
+                  className="w-full sm:w-64"
                   autoFocus
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
@@ -87,23 +87,26 @@ export function MenuBuilderContent({
                     }
                   }}
                 />
-                <Button onClick={onAddCategory} disabled={!newCategoryName.trim()}>
-                  Add
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsAddingCategory(false);
-                    setNewCategoryName('');
-                  }}
-                >
-                  Cancel
-                </Button>
+                <div className="flex space-x-2 sm:space-x-3">
+                  <Button onClick={onAddCategory} disabled={!newCategoryName.trim()} className="flex-1 sm:flex-none">
+                    Add
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsAddingCategory(false);
+                      setNewCategoryName('');
+                    }}
+                    className="flex-1 sm:flex-none"
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
             ) : (
               <Button
                 onClick={() => setIsAddingCategory(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Category
@@ -117,17 +120,19 @@ export function MenuBuilderContent({
               variant="outline"
               size="sm"
               onClick={onToggleAllExpanded}
-              className="flex items-center space-x-2"
+              className="flex items-center justify-center space-x-2 w-full sm:w-auto"
             >
               {allExpanded ? (
                 <>
                   <ChevronUp className="w-4 h-4" />
-                  <span>Collapse All</span>
+                  <span className="hidden sm:inline">Collapse All</span>
+                  <span className="sm:hidden">Collapse</span>
                 </>
               ) : (
                 <>
                   <ChevronDown className="w-4 h-4" />
-                  <span>Expand All</span>
+                  <span className="hidden sm:inline">Expand All</span>
+                  <span className="sm:hidden">Expand</span>
                 </>
               )}
             </Button>

@@ -160,23 +160,26 @@ export function ActiveOrdersList() {
     <div className="space-y-6">
       {/* Staff-focused Header */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
           <div>
             <h2 className="text-lg font-semibold text-blue-900">Kitchen Dashboard</h2>
             <p className="text-blue-700 text-sm">Active orders requiring attention</p>
           </div>
-          <div className="flex items-center space-x-4 text-sm">
-            <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span>High Priority ({filteredOrders.filter(o => getUrgencyLevel(o) === 'high').length})</span>
+              <span className="hidden sm:inline">High Priority ({filteredOrders.filter(o => getUrgencyLevel(o) === 'high').length})</span>
+              <span className="sm:hidden">High ({filteredOrders.filter(o => getUrgencyLevel(o) === 'high').length})</span>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <span>Medium Priority ({filteredOrders.filter(o => getUrgencyLevel(o) === 'medium').length})</span>
+              <span className="hidden sm:inline">Medium Priority ({filteredOrders.filter(o => getUrgencyLevel(o) === 'medium').length})</span>
+              <span className="sm:hidden">Med ({filteredOrders.filter(o => getUrgencyLevel(o) === 'medium').length})</span>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span>Low Priority ({filteredOrders.filter(o => getUrgencyLevel(o) === 'low').length})</span>
+              <span className="hidden sm:inline">Low Priority ({filteredOrders.filter(o => getUrgencyLevel(o) === 'low').length})</span>
+              <span className="sm:hidden">Low ({filteredOrders.filter(o => getUrgencyLevel(o) === 'low').length})</span>
             </div>
           </div>
         </div>
@@ -243,35 +246,33 @@ export function ActiveOrdersList() {
                   className={`hover:shadow-md transition-shadow border-l-4 ${urgencyColor}`}
                 >
                   <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div>
-                          <CardTitle className="text-lg flex items-center space-x-2">
-                            <span>Order #{order.id}</span>
-                            {urgency === 'high' && <AlertCircle className="w-4 h-4 text-red-500" />}
-                            {urgency === 'medium' && <Timer className="w-4 h-4 text-yellow-500" />}
-                          </CardTitle>
-                          <CardDescription>
-                            Table {order.tableId} • {getTimeAgo(order.createdAt)}
-                            {urgency === 'high' && <span className="text-red-600 font-semibold ml-2">⚠️ URGENT</span>}
-                          </CardDescription>
-                        </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-base sm:text-lg flex items-center space-x-2">
+                          <span className="truncate">Order #{order.id}</span>
+                          {urgency === 'high' && <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />}
+                          {urgency === 'medium' && <Timer className="w-4 h-4 text-yellow-500 flex-shrink-0" />}
+                        </CardTitle>
+                        <CardDescription className="text-sm">
+                          Table {order.tableId} • {getTimeAgo(order.createdAt)}
+                          {urgency === 'high' && <span className="text-red-600 font-semibold ml-2">⚠️ URGENT</span>}
+                        </CardDescription>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <Badge className={statusConfig[order.status].color}>
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                        <Badge className={`${statusConfig[order.status].color} text-xs`}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {statusConfig[order.status].label}
                         </Badge>
-                        <Button variant="outline" size="sm">
-                          <Eye className="w-4 h-4 mr-2" />
-                          View Details
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                          <Eye className="w-4 h-4 sm:mr-2" />
+                          <span className="hidden sm:inline">View Details</span>
                         </Button>
                       </div>
                     </div>
                   </CardHeader>
                   
                   <CardContent>
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                       {/* Customer Info */}
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
@@ -295,23 +296,23 @@ export function ActiveOrdersList() {
                         </h4>
                         <div className="space-y-2">
                           {order.items.map((item) => (
-                            <div key={item.id} className="flex justify-between items-start p-2 bg-gray-50 rounded">
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-2">
+                            <div key={item.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-start p-2 bg-gray-50 rounded space-y-2 sm:space-y-0">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
                                   <span className="font-medium">{item.quantity}x</span>
-                                  <span className="font-semibold">{item.name}</span>
+                                  <span className="font-semibold truncate">{item.name}</span>
                                   <Badge variant="outline" className="text-xs">
                                     {item.category}
                                   </Badge>
                                 </div>
                                 {item.specialInstructions && (
                                   <div className="text-sm text-orange-600 mt-1 flex items-center">
-                                    <AlertCircle className="w-3 h-3 mr-1" />
+                                    <AlertCircle className="w-3 h-3 mr-1 flex-shrink-0" />
                                     <span className="font-medium">Special: {item.specialInstructions}</span>
                                   </div>
                                 )}
                               </div>
-                              <div className="text-right">
+                              <div className="text-right sm:text-right">
                                 <div className="font-semibold">${(item.price * item.quantity).toFixed(2)}</div>
                               </div>
                             </div>

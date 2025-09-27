@@ -10,6 +10,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { QRCodeComponent } from '@/components/ui/qr-code';
+import QRCode from 'qrcode';
 import { 
   Eye, 
   Smartphone, 
@@ -38,6 +48,7 @@ export function PublicMenuPreview() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
 
   useEffect(() => {
     const loadMenuData = async () => {
@@ -80,6 +91,48 @@ export function PublicMenuPreview() {
     }
   };
 
+  const handleDownloadQR = async () => {
+    if (!currentRestaurant?.id) return;
+
+    try {
+      const menuUrl = `${window.location.origin}/menu/${currentRestaurant.id}`;
+
+      const qrDataUrl = await QRCode.toDataURL(menuUrl, {
+        width: 400,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF',
+        },
+      });
+
+      const link = document.createElement('a');
+      link.download = `${currentRestaurant.name || 'menu'}-qr-code.png`;
+      link.href = qrDataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      alert('Failed to generate QR code. Please try again.');
+    }
+  };
+
+  const handleShareMenu = () => {
+    if (!currentRestaurant?.id) return;
+
+    const menuUrl = `${window.location.origin}/menu/${currentRestaurant.id}`;
+    navigator.clipboard.writeText(menuUrl).then(() => {
+      alert('Menu URL copied to clipboard!');
+    }).catch(() => {
+      alert(`Menu URL: ${menuUrl}`);
+    });
+  };
+
+  const handlePreviewMenu = () => {
+    if (!currentRestaurant?.id) return;
+    window.open(`/menu/${currentRestaurant.id}`, '_blank');
+  };
 
   const currentTheme = themes[selectedTheme as keyof typeof themes] || themes.blue;
 
@@ -261,6 +314,20 @@ export function PublicMenuPreview() {
                     <p className="text-gray-600">No menu items yet</p>
                   </div>
                 )}
+
+                {/* Preview Footer */}
+                <div className="mt-8 pt-4 border-t border-gray-200 text-center">
+                  <p className="text-gray-500 text-sm mb-2">
+                    We hope you enjoy your meal. 🍽️
+                  </p>
+                  {/* Show powered by footer based on setting */}
+                  {menuData?.showPoweredBy !== false && (
+                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-2">
+                      <span className="font-medium">Powered by</span>
+                      <span className="text-indigo-600 font-bold text-base">OishiMenu</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -274,21 +341,61 @@ export function PublicMenuPreview() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handlePreviewMenu}>
+              <Eye className="h-4 w-4 mr-2" />
+              Preview Public Menu
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleShareMenu}>
               <Share2 className="h-4 w-4 mr-2" />
-              Share Menu
+              Copy Menu URL
             </Button>
-            <Button variant="outline" size="sm">
-              <QrCode className="h-4 w-4 mr-2" />
-              Generate QR Code
-            </Button>
-            <Button variant="outline" size="sm">
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <QrCode className="h-4 w-4 mr-2" />
+                  QR Code
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Menu QR Code</DialogTitle>
+                  <DialogDescription>
+                    Scan this QR code to access your public menu, or download it for printing.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="bg-white p-4 rounded-lg border">
+                    {currentRestaurant?.id && (
+                      <QRCodeComponent
+                        value={`${window.location.origin}/menu/${currentRestaurant.id}`}
+                        size={200}
+                        onGenerated={setQrCodeDataUrl}
+                      />
+                    )}
+                  </div>
+                  <div className="text-center space-y-2">
+                    <p className="text-sm text-gray-600">
+                      Menu URL: {window.location.origin}/menu/{currentRestaurant?.id}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={handleDownloadQR}>
+                        <Download className="h-4 w-4 mr-2" />
+                        Download QR Code
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={handleShareMenu}>
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Copy URL
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <Button variant="outline" size="sm" disabled>
               <Download className="h-4 w-4 mr-2" />
               Download PDF
-            </Button>
-            <Button variant="outline" size="sm">
-              <Settings className="h-4 w-4 mr-2" />
-              Menu Settings
             </Button>
           </div>
         </CardContent>

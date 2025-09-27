@@ -3,19 +3,20 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { 
-  LayoutDashboard, 
-  Menu, 
-  ShoppingCart, 
-  Table, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Menu,
+  ShoppingCart,
+  Table,
+  Settings,
   BarChart3,
   Smartphone,
   LogOut,
   CreditCard,
   Building2,
   Shield,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -32,21 +33,56 @@ const navigation = [
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { currentRestaurant, restaurants, setCurrentRestaurant } = useRestaurant();
 
+  const handleNavClick = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="flex h-full w-64 flex-col bg-white border-r">
-      <div className="flex h-16 items-center px-6 border-b">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <Smartphone className="w-5 h-5 text-white" />
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && onClose && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={cn(
+        "fixed inset-y-0 left-0 z-50 w-64 flex flex-col bg-white border-r transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <div className="flex h-16 items-center px-6 border-b">
+          <div className="flex items-center space-x-2 flex-1">
+            <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Smartphone className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold text-gray-900">OishiMenu</span>
           </div>
-          <span className="text-xl font-bold text-gray-900">Smart Menu AI</span>
+          {/* Mobile close button */}
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="lg:hidden"
+              onClick={onClose}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          )}
         </div>
-      </div>
       
       {/* Restaurant Selection */}
       <div className="px-4 py-3 border-b bg-gray-50">
@@ -105,6 +141,7 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={handleNavClick}
               className={cn(
                 'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
                 isActive
@@ -145,7 +182,8 @@ export function Sidebar() {
           <LogOut className="mr-2 h-4 w-4" />
           Sign out
         </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

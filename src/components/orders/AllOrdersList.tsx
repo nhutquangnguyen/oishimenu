@@ -6,21 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Search, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Search,
+  Clock,
+  CheckCircle,
+  XCircle,
   Eye,
   DollarSign,
   User,
-  Phone,
   Calendar,
-  TrendingUp,
-  Filter,
-  Download,
-  BarChart3,
-  Star
+  Download
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRestaurant } from '@/contexts/RestaurantContext';
@@ -137,64 +132,9 @@ export function AllOrdersList() {
     return `${diffInDays}d ago`;
   };
 
-  // Calculate statistics
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total + order.tip, 0);
-  const completedOrders = orders.filter(order => order.status === 'delivered').length;
-  const cancelledOrders = orders.filter(order => order.status === 'cancelled').length;
-  const averageOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
 
   return (
     <div className="space-y-6">
-      {/* Statistics Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Orders</p>
-                <p className="text-2xl font-bold">{orders.length}</p>
-              </div>
-              <BarChart3 className="w-8 h-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold">${totalRevenue.toFixed(2)}</p>
-              </div>
-              <DollarSign className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Completed</p>
-                <p className="text-2xl font-bold">{completedOrders}</p>
-              </div>
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
-                <p className="text-2xl font-bold">${averageOrderValue.toFixed(2)}</p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
@@ -233,9 +173,9 @@ export function AllOrdersList() {
             <SelectItem value="month">This Month</SelectItem>
           </SelectContent>
         </Select>
-        <Button variant="outline">
-          <Download className="w-4 h-4 mr-2" />
-          Export
+        <Button variant="outline" className="w-full sm:w-auto">
+          <Download className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Export</span>
         </Button>
       </div>
 
@@ -280,30 +220,28 @@ export function AllOrdersList() {
             return (
               <Card key={order.id} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div>
-                        <CardTitle className="text-lg">Order #{order.id}</CardTitle>
-                        <CardDescription>
-                          Table {order.tableId} • {getTimeAgo(order.createdAt)}
-                        </CardDescription>
-                      </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-base sm:text-lg truncate">Order #{order.id}</CardTitle>
+                      <CardDescription className="text-sm">
+                        Table {order.tableId} • {getTimeAgo(order.createdAt)}
+                      </CardDescription>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <Badge className={statusConfig[order.status].color}>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                      <Badge className={`${statusConfig[order.status].color} text-xs`}>
                         <StatusIcon className="w-3 h-3 mr-1" />
                         {statusConfig[order.status].label}
                       </Badge>
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Details
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                        <Eye className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">View Details</span>
                       </Button>
                     </div>
                   </div>
                 </CardHeader>
                 
                 <CardContent>
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                     {/* Customer Info */}
                     <div>
                       <h4 className="font-semibold text-gray-900 mb-2">Customer</h4>

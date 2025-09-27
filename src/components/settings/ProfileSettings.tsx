@@ -17,14 +17,15 @@ export function ProfileSettings() {
         <CardDescription>Update your personal information and contact details.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
           <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
             JD
           </div>
-          <div>
-            <Button variant="outline" size="sm">
+          <div className="text-center sm:text-left">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <Upload className="w-4 h-4 mr-2" />
-              Change Photo
+              <span className="hidden sm:inline">Change Photo</span>
+              <span className="sm:hidden">Change</span>
             </Button>
             <p className="text-sm text-gray-500 mt-1">JPG, PNG up to 2MB</p>
           </div>
@@ -50,9 +51,10 @@ export function ProfileSettings() {
         </div>
 
         <div className="flex justify-end">
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Save className="w-4 h-4 mr-2" />
-            Save Changes
+            <span className="hidden sm:inline">Save Changes</span>
+            <span className="sm:hidden">Save</span>
           </Button>
         </div>
       </CardContent>

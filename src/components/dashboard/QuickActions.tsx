@@ -29,20 +29,22 @@ export function QuickActions({
         <CardTitle>Quick Actions</CardTitle>
         <CardDescription>Common tasks to get you started</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <Button className="w-full justify-start" onClick={onAddMenuItem}>
+      <CardContent className="space-y-3">
+        <Button className="w-full justify-start text-sm sm:text-base" onClick={onAddMenuItem}>
           <Plus className="mr-2 h-4 w-4" />
           Add Menu Item
         </Button>
-        <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/dashboard/pos')}>
+        <Button variant="outline" className="w-full justify-start text-sm sm:text-base" onClick={() => router.push('/dashboard/pos')}>
           <CreditCard className="mr-2 h-4 w-4" />
-          Open POS System
+          <span className="hidden sm:inline">Open POS System</span>
+          <span className="sm:hidden">POS System</span>
         </Button>
-        <Button variant="outline" className="w-full justify-start" onClick={onPreviewMenu}>
+        <Button variant="outline" className="w-full justify-start text-sm sm:text-base" onClick={onPreviewMenu}>
           <Eye className="mr-2 h-4 w-4" />
-          Preview Public Menu
+          <span className="hidden sm:inline">Preview Public Menu</span>
+          <span className="sm:hidden">Preview Menu</span>
         </Button>
-        <Button variant="outline" className="w-full justify-start" onClick={onViewAnalytics}>
+        <Button variant="outline" className="w-full justify-start text-sm sm:text-base" onClick={onViewAnalytics}>
           <BarChart3 className="mr-2 h-4 w-4" />
           View Analytics
         </Button>

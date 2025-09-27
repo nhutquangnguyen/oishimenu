@@ -42,6 +42,8 @@ interface MenuPreviewProps {
   onEmbedWebsite: () => void;
   logo?: string;
   onLogoChange: (logo: string | undefined) => void;
+  showPoweredBy: boolean;
+  setShowPoweredBy: (show: boolean) => void;
 }
 
 export function MenuPreview({
@@ -62,7 +64,9 @@ export function MenuPreview({
   onShareSocial,
   onEmbedWebsite,
   logo,
-  onLogoChange
+  onLogoChange,
+  showPoweredBy,
+  setShowPoweredBy
 }: MenuPreviewProps) {
   const logoInputRef = useRef<HTMLInputElement>(null);
 
@@ -225,6 +229,18 @@ export function MenuPreview({
               <Switch
                 checked={isMenuPublic}
                 onCheckedChange={setIsMenuPublic}
+              />
+            </div>
+
+            {/* Powered By Footer */}
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-medium">Show "Powered by OishiMenu"</label>
+                <p className="text-xs text-gray-500">Display our branding in menu footer</p>
+              </div>
+              <Switch
+                checked={showPoweredBy}
+                onCheckedChange={setShowPoweredBy}
               />
             </div>
 

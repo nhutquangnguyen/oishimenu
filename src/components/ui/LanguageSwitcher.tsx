@@ -19,12 +19,12 @@ export function LanguageSwitcher() {
         EN
       </Button>
       <Button
-        variant={language === 'vn' ? 'default' : 'outline'}
+        variant={language === 'vi' ? 'default' : 'outline'}
         size="sm"
-        onClick={() => setLanguage('vn')}
+        onClick={() => setLanguage('vi')}
         className="text-xs"
       >
-        VN
+        VI
       </Button>
     </div>
   );

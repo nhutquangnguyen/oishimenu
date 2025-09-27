@@ -8,6 +8,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRestaurant } from '@/contexts/RestaurantContext';
 import { MenuCategory, MenuItem } from './types';
 import { themes } from './constants';
+import { createSampleMenu } from '@/lib/sample-menu-templates';
+import QRCode from 'qrcode';
 
 export function MenuBuilderRefactored() {
   const { user } = useAuth();
@@ -43,6 +45,8 @@ export function MenuBuilderRefactored() {
     setSelectedTheme,
     logo,
     setLogo,
+    showPoweredBy,
+    setShowPoweredBy,
     isAutoSaveEnabled,
     setIsAutoSaveEnabled,
     isClient,
@@ -253,8 +257,33 @@ export function MenuBuilderRefactored() {
     }
   };
 
-  const handleDownloadQR = () => {
-    alert('QR Code download feature will be implemented soon.');
+  const handleDownloadQR = async () => {
+    if (!selectedRestaurantId) return;
+
+    try {
+      const menuUrl = `${window.location.origin}/menu/${selectedRestaurantId}`;
+
+      // Generate QR code as data URL
+      const qrDataUrl = await QRCode.toDataURL(menuUrl, {
+        width: 400,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF',
+        },
+      });
+
+      // Create download link
+      const link = document.createElement('a');
+      link.download = `${currentRestaurant?.name || 'menu'}-qr-code.png`;
+      link.href = qrDataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      alert('Failed to generate QR code. Please try again.');
+    }
   };
 
   const handleCopyURL = () => {
@@ -307,11 +336,39 @@ export function MenuBuilderRefactored() {
     markAsChanged();
   };
 
+  // Powered by handler
+  const handleShowPoweredByChange = (show: boolean) => {
+    setShowPoweredBy(show);
+    markAsChanged();
+  };
+
+  // Clear menu handler
+  const handleClearMenu = () => {
+    if (window.confirm('Are you sure you want to clear all menu items? This action cannot be undone.')) {
+      setCategories([]);
+      setOptionGroups([]);
+      markAsChanged();
+    }
+  };
+
+  // Load template handler
+  const handleLoadTemplate = (templateKey: string) => {
+    if (window.confirm('Loading a template will replace your current menu. Continue?')) {
+      const templateData = createSampleMenu(selectedRestaurantId, templateKey as any);
+      setCategories(templateData.categories);
+      setOptionGroups(templateData.optionGroups);
+      markAsChanged();
+    }
+  };
+
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="space-y-6">
       <MenuBuilderHeader
         selectedRestaurantId={selectedRestaurantId}
         onPreviewMenu={handlePreviewMenu}
+        onClearMenu={handleClearMenu}
+        onLoadTemplate={handleLoadTemplate}
+        onDownloadQR={handleDownloadQR}
       />
 
       <MenuBuilderTabs
@@ -362,6 +419,8 @@ export function MenuBuilderRefactored() {
         onToggleCategoryExpanded={handleToggleCategoryExpanded}
         logo={logo}
         onLogoChange={handleLogoChange}
+        showPoweredBy={showPoweredBy}
+        setShowPoweredBy={handleShowPoweredByChange}
       />
     </div>
   );

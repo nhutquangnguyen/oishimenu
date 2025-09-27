@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
+import { PageContent } from '@/components/shared/PageContent';
 import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRestaurant } from '@/contexts/RestaurantContext';
@@ -71,13 +72,12 @@ export default function AnalyticsPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
-          <p className="text-gray-600">Track your restaurant's performance with detailed insights and reports.</p>
-        </div>
+      <PageContent
+        title="Analytics"
+        description="Track your restaurant's performance with detailed insights and reports."
+      >
         <AnalyticsDashboard data={analytics} loading={loading} />
-      </div>
+      </PageContent>
     </DashboardLayout>
   );
 }

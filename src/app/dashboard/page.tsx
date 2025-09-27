@@ -1,9 +1,10 @@
 'use client';
 
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
+import { PageContent } from '@/components/shared/PageContent';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
+import {
   Calendar,
   Download
 } from 'lucide-react';
@@ -15,19 +16,18 @@ import { getAnalytics, calculateAnalytics, saveAnalytics, generateDemoOrders } f
 import { AnalyticsData } from '@/components/dashboard/types';
 import { StatsGrid } from '@/components/dashboard/StatsGrid';
 import { QuickActions } from '@/components/dashboard/QuickActions';
-import { OrderCountChart } from '@/components/dashboard/OrderCountChart';
-import { CustomerSatisfaction } from '@/components/dashboard/CustomerSatisfaction';
-import { PerformanceInsights } from '@/components/dashboard/PerformanceInsights';
 import { TopMenuItems } from '@/components/dashboard/TopMenuItems';
 import { HourlyActivity } from '@/components/dashboard/HourlyActivity';
+import { RevenueByDates } from '@/components/dashboard/RevenueByDates';
 
 export default function DashboardPage() {
   const [timeRange, setTimeRange] = useState('today');
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
   const router = useRouter();
   const { user, isDisabled } = useAuth();
-  const { currentRestaurant } = useRestaurant();
+  const { currentRestaurant, restaurants, loading: restaurantsLoading } = useRestaurant();
   
   // Load real analytics data
   useEffect(() => {
@@ -80,9 +80,63 @@ export default function DashboardPage() {
         setLoading(false);
       }
     };
-    
+
     loadAnalytics();
   }, [user?.uid, user?.email, currentRestaurant?.id]);
+
+  // Check onboarding completion and redirect to template selection if needed
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      if (!user?.uid || !currentRestaurant?.id) return;
+
+      const hasCompletedOnboarding = localStorage.getItem('onboardingCompleted');
+
+      if (!hasCompletedOnboarding) {
+        // Check if the restaurant has any menu items
+        try {
+          const { doc, getDoc } = await import('firebase/firestore');
+          const { db } = await import('@/lib/firebase');
+          const menuDoc = await getDoc(doc(db, 'menus', currentRestaurant.id));
+
+          if (menuDoc.exists()) {
+            const menuData = menuDoc.data();
+            const hasMenuItems = menuData.categories && menuData.categories.length > 0;
+
+            if (!hasMenuItems) {
+              // No menu items and no onboarding completed - redirect to template selection
+              router.push('/dashboard/onboarding/templates');
+              return;
+            } else {
+              // Has menu items - mark onboarding as completed
+              localStorage.setItem('onboardingCompleted', 'true');
+              setOnboardingCompleted(true);
+            }
+          } else {
+            // No menu document - redirect to template selection
+            router.push('/dashboard/onboarding/templates');
+            return;
+          }
+        } catch (error) {
+          console.error('Error checking menu data:', error);
+        }
+      } else {
+        setOnboardingCompleted(true);
+      }
+    };
+
+    checkOnboarding();
+  }, [user?.uid, currentRestaurant?.id, router]);
+
+  // Check if user has no restaurants and redirect to restaurant creation
+  useEffect(() => {
+    if (!user?.uid || restaurantsLoading) return;
+
+    // If user has no restaurants, redirect to restaurant management page
+    if (restaurants.length === 0) {
+      router.push('/dashboard/restaurants');
+      return;
+    }
+  }, [user?.uid, restaurants, restaurantsLoading, router]);
 
   const handleAddMenuItem = () => {
     router.push('/dashboard/menu');
@@ -156,46 +210,49 @@ export default function DashboardPage() {
     );
   }
 
+  const headerActions = (
+    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
+      <Select value={timeRange} onValueChange={setTimeRange}>
+        <SelectTrigger className="w-full sm:w-48">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="today">Today</SelectItem>
+          <SelectItem value="yesterday">Yesterday</SelectItem>
+          <SelectItem value="thisWeek">This Week</SelectItem>
+          <SelectItem value="lastWeek">Last Week</SelectItem>
+          <SelectItem value="thisMonth">This Month</SelectItem>
+          <SelectItem value="lastMonth">Last Month</SelectItem>
+        </SelectContent>
+      </Select>
+      <div className="grid grid-cols-2 sm:flex sm:space-x-2 gap-2 sm:gap-0">
+        <Button variant="outline" onClick={handleCustomRange} className="text-xs sm:text-sm">
+          <Calendar className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Custom Range</span>
+          <span className="sm:hidden">Custom</span>
+        </Button>
+        <Button variant="outline" onClick={handleExportReport} className="text-xs sm:text-sm">
+          <Download className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Export Report</span>
+          <span className="sm:hidden">Export</span>
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <DashboardLayout>
-      <div>
-        <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-600">Welcome back! Here&apos;s what&apos;s happening with your restaurant.</p>
-            </div>
-            <div className="flex space-x-2">
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="yesterday">Yesterday</SelectItem>
-                  <SelectItem value="thisWeek">This Week</SelectItem>
-                  <SelectItem value="lastWeek">Last Week</SelectItem>
-                  <SelectItem value="thisMonth">This Month</SelectItem>
-                  <SelectItem value="lastMonth">Last Month</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button variant="outline" onClick={handleCustomRange}>
-                <Calendar className="w-4 h-4 mr-2" />
-                Custom Range
-              </Button>
-              <Button variant="outline" onClick={handleExportReport}>
-                <Download className="w-4 h-4 mr-2" />
-                Export Report
-              </Button>
-            </div>
-          </div>
-        </div>
+      <PageContent
+        title="Dashboard"
+        description="Welcome back! Here's what's happening with your restaurant."
+        headerActions={headerActions}
+      >
 
         {/* Enhanced Stats Grid with Analytics */}
         <StatsGrid analytics={analytics} />
 
         {/* Quick Actions and Hourly Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           <QuickActions
             onAddMenuItem={handleAddMenuItem}
             onPreviewMenu={handlePreviewMenu}
@@ -204,20 +261,12 @@ export default function DashboardPage() {
           <HourlyActivity analytics={analytics} />
         </div>
 
-        {/* Order Count Trend Chart */}
-        <OrderCountChart analytics={analytics} />
+        {/* Revenue by Dates */}
+        <RevenueByDates analytics={analytics} />
 
         {/* Top Menu Items */}
-        <div className="mb-8">
-          <TopMenuItems analytics={analytics} />
-        </div>
-
-        {/* Customer Satisfaction & Performance */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <CustomerSatisfaction analytics={analytics} />
-          <PerformanceInsights analytics={analytics} />
-        </div>
-      </div>
+        <TopMenuItems analytics={analytics} />
+      </PageContent>
     </DashboardLayout>
   );
 }

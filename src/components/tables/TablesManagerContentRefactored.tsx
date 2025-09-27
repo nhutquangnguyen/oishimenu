@@ -241,7 +241,7 @@ export function TablesManagerContentRefactored({
   return (
     <div className="space-y-6">
       {/* Add Area Section */}
-      <div className="flex items-center space-x-3 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 mb-6">
         {isAddingArea ? (
           <>
             <Input
@@ -256,26 +256,30 @@ export function TablesManagerContentRefactored({
                 }
               }}
             />
-            <Button onClick={handleAddArea} disabled={!newAreaName.trim()}>
-              Add
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsAddingArea(false);
-                setNewAreaName('');
-              }}
-            >
-              Cancel
-            </Button>
+            <div className="flex space-x-2">
+              <Button onClick={handleAddArea} disabled={!newAreaName.trim()} className="flex-1 sm:flex-none">
+                Add
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsAddingArea(false);
+                  setNewAreaName('');
+                }}
+                className="flex-1 sm:flex-none"
+              >
+                Cancel
+              </Button>
+            </div>
           </>
         ) : (
           <Button
             onClick={() => setIsAddingArea(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Area
+            <span className="hidden sm:inline">Add Area</span>
+            <span className="sm:hidden">Add Area</span>
           </Button>
         )}
       </div>
@@ -301,13 +305,15 @@ export function TablesManagerContentRefactored({
             >
               {collapsedAreas.size === areas.length ? (
                 <>
-                  <ChevronDown className="w-4 h-4 mr-2" />
-                  Expand All
+                  <ChevronDown className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Expand All</span>
+                  <span className="sm:hidden ml-1">Expand</span>
                 </>
               ) : (
                 <>
-                  <ChevronUp className="w-4 h-4 mr-2" />
-                  Collapse All
+                  <ChevronUp className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Collapse All</span>
+                  <span className="sm:hidden ml-1">Collapse</span>
                 </>
               )}
             </Button>
@@ -347,16 +353,17 @@ export function TablesManagerContentRefactored({
                 isCollapsed={collapsedAreas.has(container.id)}
                 onToggleCollapse={() => toggleAreaCollapse(container.id)}
                 headerActions={
-                  <div className="flex items-center space-x-3">
-                    <div className="text-sm text-gray-600">
-                      {container.items.length} tables • {areaOrders} orders
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <div className="text-xs sm:text-sm text-gray-600">
+                      <span className="hidden sm:inline">{container.items.length} tables • {areaOrders} orders</span>
+                      <span className="sm:hidden">{container.items.length}T • {areaOrders}O</span>
                     </div>
 
                     {/* Area Status Badge */}
                     {isEditingAreaStatus === container.id ? (
-                      <div className="flex items-center space-x-1">
+                      <div className="flex items-center gap-1">
                         <Select value={editAreaStatus} onValueChange={setEditAreaStatus}>
-                          <SelectTrigger className="w-24 h-6 text-xs">
+                          <SelectTrigger className="w-20 sm:w-24 h-6 text-xs">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -369,7 +376,7 @@ export function TablesManagerContentRefactored({
                           size="sm"
                           variant="outline"
                           onClick={() => handleAreaStatusSave(container.id)}
-                          className="h-5 w-5 p-0"
+                          className="h-6 w-6 p-0"
                         >
                           <Check className="h-3 w-3" />
                         </Button>
@@ -377,7 +384,7 @@ export function TablesManagerContentRefactored({
                           size="sm"
                           variant="outline"
                           onClick={handleAreaStatusCancel}
-                          className="h-5 w-5 p-0"
+                          className="h-6 w-6 p-0"
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -385,25 +392,26 @@ export function TablesManagerContentRefactored({
                     ) : (
                       <Badge
                         variant="outline"
-                        className={`text-xs py-0 px-2 ${getAreaStatusColor(areaStatuses[container.id] || 'active')} cursor-pointer hover:opacity-75`}
+                        className={`text-xs py-0 px-1 sm:px-2 ${getAreaStatusColor(areaStatuses[container.id] || 'active')} cursor-pointer hover:opacity-75`}
                         onClick={() => {
                           setIsEditingAreaStatus(container.id);
                           setEditAreaStatus(areaStatuses[container.id] || 'active');
                         }}
                       >
-                        <span className="capitalize">{areaStatuses[container.id] || 'active'}</span>
+                        <span className="capitalize hidden sm:inline">{areaStatuses[container.id] || 'active'}</span>
+                        <span className="capitalize sm:hidden">{(areaStatuses[container.id] || 'active').charAt(0).toUpperCase()}</span>
                         <Edit className="w-2 h-2 ml-1 opacity-50" />
                       </Badge>
                     )}
 
                     {onAddTable && (
                       isAddingTable === container.id ? (
-                        <div className="flex items-center space-x-2">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                           <Input
                             placeholder="Table name"
                             value={newTableName}
                             onChange={(e) => setNewTableName(e.target.value)}
-                            className="w-32 h-8"
+                            className="w-full sm:w-32 h-8"
                             autoFocus
                             onKeyPress={(e) => {
                               if (e.key === 'Enter') {
@@ -411,34 +419,39 @@ export function TablesManagerContentRefactored({
                               }
                             }}
                           />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleAddTable(container.id)}
-                            disabled={!newTableName.trim()}
-                          >
-                            Add
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setIsAddingTable(null);
-                              setNewTableName('');
-                            }}
-                          >
-                            Cancel
-                          </Button>
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleAddTable(container.id)}
+                              disabled={!newTableName.trim()}
+                              className="flex-1 sm:flex-none"
+                            >
+                              Add
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setIsAddingTable(null);
+                                setNewTableName('');
+                              }}
+                              className="flex-1 sm:flex-none"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
                         </div>
                       ) : (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => setIsAddingTable(container.id)}
-                          className="text-green-600 hover:bg-green-50 border-green-200"
+                          className="text-green-600 hover:bg-green-50 border-green-200 w-full sm:w-auto"
                         >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Add Table
+                          <Plus className="w-4 h-4 sm:mr-1" />
+                          <span className="hidden sm:inline">Add Table</span>
+                          <span className="sm:hidden ml-1">Add</span>
                         </Button>
                       )
                     )}

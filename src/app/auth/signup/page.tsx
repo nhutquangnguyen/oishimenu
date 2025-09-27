@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -14,16 +14,31 @@ export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [restaurantName, setRestaurantName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
   const { signUp, signInWithGoogle } = useAuth();
   const router = useRouter();
 
+  // Load restaurant name from localStorage on component mount
+  useEffect(() => {
+    const savedBusinessName = localStorage.getItem('businessName');
+    if (savedBusinessName) {
+      setRestaurantName(savedBusinessName);
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    if (!restaurantName.trim()) {
+      setError('Restaurant name is required');
+      setLoading(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -39,6 +54,11 @@ export default function SignUpPage() {
 
     try {
       await signUp(email, password);
+      // Store restaurant name for post-signup processing
+      localStorage.setItem('pendingRestaurantName', restaurantName);
+      // Clear the businessName from landing page
+      localStorage.removeItem('businessName');
+      // Redirect to dashboard
       router.push('/dashboard');
     } catch (error: any) {
       setError(error.message);
@@ -51,8 +71,19 @@ export default function SignUpPage() {
     setLoading(true);
     setError('');
 
+    if (!restaurantName.trim()) {
+      setError('Restaurant name is required');
+      setLoading(false);
+      return;
+    }
+
     try {
       await signInWithGoogle();
+      // Store restaurant name for post-signup processing
+      localStorage.setItem('pendingRestaurantName', restaurantName);
+      // Clear the businessName from landing page
+      localStorage.removeItem('businessName');
+      // Redirect to dashboard
       router.push('/dashboard');
     } catch (error: any) {
       setError(error.message);
@@ -66,10 +97,10 @@ export default function SignUpPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Smartphone className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">Smart Menu AI</span>
+            <span className="text-2xl font-bold text-gray-900">OishiMenu</span>
           </div>
           <p className="text-gray-600">Create your restaurant account</p>
         </div>
@@ -81,6 +112,19 @@ export default function SignUpPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="restaurantName">Restaurant Name</Label>
+                <Input
+                  id="restaurantName"
+                  type="text"
+                  placeholder="Enter your restaurant name"
+                  value={restaurantName}
+                  onChange={(e) => setRestaurantName(e.target.value)}
+                  className="font-medium"
+                  required
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input

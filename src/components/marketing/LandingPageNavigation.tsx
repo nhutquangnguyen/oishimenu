@@ -11,6 +11,18 @@ export function LandingPageNavigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t } = useLanguage();
 
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+    setIsMenuOpen(false);
+  };
+
   return (
     <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,10 +36,10 @@ export function LandingPageNavigation() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="#features" className="text-gray-600 hover:text-gray-900">{t('nav.features')}</Link>
-            <Link href="#how-it-works" className="text-gray-600 hover:text-gray-900">{t('nav.howItWorks')}</Link>
-            <Link href="#pricing" className="text-gray-600 hover:text-gray-900">{t('nav.pricing')}</Link>
-            <Link href="#testimonials" className="text-gray-600 hover:text-gray-900">{t('nav.testimonials')}</Link>
+            <a href="#features" onClick={(e) => handleSmoothScroll(e, 'features')} className="text-gray-600 hover:text-gray-900 transition-colors duration-200 cursor-pointer">{t('nav.features')}</a>
+            <a href="#how-it-works" onClick={(e) => handleSmoothScroll(e, 'how-it-works')} className="text-gray-600 hover:text-gray-900 transition-colors duration-200 cursor-pointer">{t('nav.howItWorks')}</a>
+            <a href="#pricing" onClick={(e) => handleSmoothScroll(e, 'pricing')} className="text-gray-600 hover:text-gray-900 transition-colors duration-200 cursor-pointer">{t('nav.pricing')}</a>
+            <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, 'testimonials')} className="text-gray-600 hover:text-gray-900 transition-colors duration-200 cursor-pointer">{t('nav.testimonials')}</a>
           </div>
           
           <div className="hidden md:flex items-center space-x-4">
@@ -53,34 +65,34 @@ export function LandingPageNavigation() {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
-              <Link
+              <a
                 href="#features"
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleSmoothScroll(e, 'features')}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md cursor-pointer"
               >
                 {t('nav.features')}
-              </Link>
-              <Link
+              </a>
+              <a
                 href="#how-it-works"
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleSmoothScroll(e, 'how-it-works')}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md cursor-pointer"
               >
                 {t('nav.howItWorks')}
-              </Link>
-              <Link
+              </a>
+              <a
                 href="#pricing"
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleSmoothScroll(e, 'pricing')}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md cursor-pointer"
               >
                 {t('nav.pricing')}
-              </Link>
-              <Link
+              </a>
+              <a
                 href="#testimonials"
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleSmoothScroll(e, 'testimonials')}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md cursor-pointer"
               >
                 {t('nav.testimonials')}
-              </Link>
+              </a>
               <div className="border-t border-gray-200 pt-4 pb-3">
                 <div className="flex items-center px-3 space-y-3 flex-col">
                   <div className="w-full flex justify-center mb-3">

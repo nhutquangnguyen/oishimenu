@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Smart Menu AI - Digital Menu Platform for Restaurants",
+  title: "OishiMenu - Digital Menu Platform for Restaurants",
   description: "Create beautiful, customizable digital menus for your restaurant or café. Drag-and-drop interface, real-time orders, and smart analytics.",
 };
 

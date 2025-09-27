@@ -1,0 +1,128 @@
+name: 🚀 Deploy OishiMenu
+
+on:
+  push:
+    branches: [ main, production ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Build and test job
+  test:
+    name: 🧪 Test & Build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: 📋 Install dependencies
+      run: npm ci
+
+    - name: 🔍 Run type checking
+      run: npm run type-check
+
+    - name: 🧹 Run linting
+      run: npm run lint
+
+    - name: 🏗️ Build application
+      run: npm run build
+      env:
+        NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+        NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+        NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+        NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+        NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+
+  # Deploy to Vercel (production)
+  deploy-vercel:
+    name: 🌐 Deploy to Vercel
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🚀 Deploy to Vercel
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        vercel-args: '--prod'
+
+  # Security scanning
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔍 Run security audit
+      run: npm audit --audit-level=moderate
+
+    - name: 🛡️ Run CodeQL Analysis
+      uses: github/codeql-action/init@v3
+      with:
+        languages: typescript, javascript
+
+    - name: 🔎 Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+
+  # Performance tests
+  lighthouse:
+    name: 🏃‍♂️ Performance Tests
+    needs: deploy-vercel
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🏃‍♂️ Run Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v10
+      with:
+        urls: |
+          https://oishimenu.com
+          https://oishimenu.com/auth/signin
+        configPath: './lighthouserc.json'
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+
+  # Notification
+  notify:
+    name: 📢 Notify Deployment
+    needs: [deploy-vercel, lighthouse]
+    runs-on: ubuntu-latest
+    if: always() && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: 📢 Deployment Success
+      if: needs.deploy-vercel.result == 'success'
+      run: |
+        echo "🎉 OishiMenu deployed successfully to production!"
+        echo "🌐 Visit: https://oishimenu.com"
+
+    - name: ❌ Deployment Failed
+      if: needs.deploy-vercel.result == 'failure'
+      run: |
+        echo "💥 Deployment failed! Check the logs above."
+        exit 1

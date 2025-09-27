@@ -1,7 +1,7 @@
 'use client';
 
 import { Card } from "@/components/ui/card";
-import { TrendingUp, DollarSign, Target } from "lucide-react";
+import { TrendingUp, DollarSign, Target, Palette, BarChart3 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Image from "next/image";
 
@@ -9,47 +9,61 @@ export function LandingPageRevenue() {
   const { t } = useLanguage();
   
   return (
-    <section className="py-16 bg-white">
+    <section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6">
             {t('revenue.title')}
-          </h2>
-          <p className="text-lg text-gray-600">
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
             {t('revenue.subtitle')}
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            {t('revenue.description')}
           </p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-emerald-50 to-teal-50">
-            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <TrendingUp className="w-8 h-8 text-white" />
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+          <Card className="group p-8 text-center hover:shadow-2xl transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm hover:bg-white hover:-translate-y-2 rounded-3xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <TrendingUp className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('revenue.moreRevenue')}</h3>
-            <p className="text-gray-600">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('revenue.moreRevenue')}</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">
               {t('revenue.moreRevenueDesc')}
             </p>
           </Card>
           
-          <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <DollarSign className="w-8 h-8 text-white" />
+          <Card className="group p-8 text-center hover:shadow-2xl transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm hover:bg-white hover:-translate-y-2 rounded-3xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <DollarSign className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('revenue.zeroCommissions')}</h3>
-            <p className="text-gray-600">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('revenue.zeroCommissions')}</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">
               {t('revenue.zeroCommissionsDesc')}
             </p>
           </Card>
           
-          <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-pink-50">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Target className="w-8 h-8 text-white" />
+          <Card className="group p-8 text-center hover:shadow-2xl transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm hover:bg-white hover:-translate-y-2 rounded-3xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <Target className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('revenue.salesGrowth')}</h3>
-            <p className="text-gray-600">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('revenue.salesGrowth')}</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">
               {t('revenue.salesGrowthDesc')}
             </p>
           </Card>
+          
+          <Card className="group p-8 text-center hover:shadow-2xl transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm hover:bg-white hover:-translate-y-2 rounded-3xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <Palette className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('revenue.branding')}</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">
+              {t('revenue.brandingDesc')}
+            </p>
+          </Card>
+          
         </div>
         
         {/* Revenue visualization */}

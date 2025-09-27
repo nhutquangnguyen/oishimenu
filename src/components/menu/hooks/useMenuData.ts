@@ -16,6 +16,7 @@ export function useMenuData(restaurantId?: string) {
   const [isMenuPublic, setIsMenuPublic] = useState(true);
   const [selectedTheme, setSelectedTheme] = useState('blue');
   const [logo, setLogo] = useState<string | undefined>(undefined);
+  const [showPoweredBy, setShowPoweredBy] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -98,6 +99,9 @@ export function useMenuData(restaurantId?: string) {
           if (menuData.restaurant && menuData.restaurant.logo && menuData.restaurant.logo !== "🏪") {
             setLogo(menuData.restaurant.logo);
           }
+          if (menuData.showPoweredBy !== undefined) {
+            setShowPoweredBy(menuData.showPoweredBy);
+          }
         } else {
           console.log('No menu data found in Firestore for restaurant:', targetRestaurantId);
         }
@@ -140,6 +144,7 @@ export function useMenuData(restaurantId?: string) {
         })),
         isPublic: isMenuPublic,
         theme: selectedTheme,
+        showPoweredBy: showPoweredBy,
         restaurantId: currentRestaurantId, // Required restaurant ID
         restaurant: currentRestaurant ? {
           name: currentRestaurant.name,
@@ -169,7 +174,7 @@ export function useMenuData(restaurantId?: string) {
     } catch (error) {
       console.error('Error saving menu:', error);
     }
-  }, [categories, optionGroups, user?.uid, isMenuPublic, selectedTheme, logo, currentRestaurantId, currentRestaurant]);
+  }, [categories, optionGroups, user?.uid, isMenuPublic, selectedTheme, logo, showPoweredBy, currentRestaurantId, currentRestaurant]);
 
   // Save theme to localStorage
   const saveThemeToStorage = useCallback((theme: string) => {
@@ -212,6 +217,8 @@ export function useMenuData(restaurantId?: string) {
     setSelectedTheme,
     logo,
     setLogo,
+    showPoweredBy,
+    setShowPoweredBy,
     hasUnsavedChanges,
     isAutoSaveEnabled,
     setIsAutoSaveEnabled,

@@ -12,13 +12,15 @@ export function OrdersTabs() {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="active" className="flex items-center space-x-2">
+        <TabsTrigger value="active" className="flex items-center justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
           <Clock className="w-4 h-4" />
-          <span>Active Orders</span>
+          <span className="hidden sm:inline">Active Orders</span>
+          <span className="sm:hidden">Active</span>
         </TabsTrigger>
-        <TabsTrigger value="all" className="flex items-center space-x-2">
+        <TabsTrigger value="all" className="flex items-center justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
           <BarChart3 className="w-4 h-4" />
-          <span>All Orders</span>
+          <span className="hidden sm:inline">All Orders</span>
+          <span className="sm:hidden">All</span>
         </TabsTrigger>
       </TabsList>
 
