@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { X, DollarSign, Star } from 'lucide-react';
 import { MenuItem, MenuOptionGroup } from './types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MenuItemDialogProps {
   item: MenuItem;
@@ -24,6 +25,8 @@ interface MenuItemDialogProps {
 
 
 export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [], allMenuItems = [], categories = [] }: MenuItemDialogProps) {
+  const { t } = useLanguage(); // Translation hook
+
   const [formData, setFormData] = useState<MenuItem>(item);
   const [selectedRecommendations, setSelectedRecommendations] = useState<string[]>(item.recommendations || []);
 
@@ -53,9 +56,9 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Menu Item</DialogTitle>
+          <DialogTitle>{t('menuBuilder.editItem.title')}</DialogTitle>
           <DialogDescription>
-            Update the details for this menu item.
+            {t('menuBuilder.editItem.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -63,29 +66,29 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
           {/* Basic Information */}
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Item Name</Label>
+              <Label htmlFor="name">{t('menuBuilder.editItem.itemName')}</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Grilled Salmon"
+                placeholder={t('menuBuilder.editItem.itemNamePlaceholder')}
               />
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t('menuBuilder.editItem.description')}</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Describe the dish, ingredients, and preparation..."
+                placeholder={t('menuBuilder.editItem.descriptionPlaceholder')}
                 rows={3}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="price">Price ($)</Label>
+                <Label htmlFor="price">{t('menuBuilder.editItem.price')}</Label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
@@ -96,7 +99,7 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
                     className="pl-10"
-                    placeholder="0.00"
+                    placeholder={t('menuBuilder.editItem.pricePlaceholder')}
                   />
                 </div>
               </div>
@@ -109,8 +112,8 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Availability</Label>
-                <p className="text-sm text-gray-500">Make this item available for ordering</p>
+                <Label>{t('menuBuilder.editItem.availability')}</Label>
+                <p className="text-sm text-gray-500">{t('menuBuilder.editItem.availabilityDescription')}</p>
               </div>
               <Switch
                 checked={formData.isAvailable}
@@ -120,8 +123,8 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Featured Item</Label>
-                <p className="text-sm text-gray-500">Highlight this item as a special or popular choice</p>
+                <Label>{t('menuBuilder.editItem.featuredItem')}</Label>
+                <p className="text-sm text-gray-500">{t('menuBuilder.editItem.featuredDescription')}</p>
               </div>
               <Switch
                 checked={formData.isFeatured}
@@ -132,23 +135,23 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
 
           {/* Image Upload (placeholder) */}
           <div>
-            <Label>Item Image</Label>
+            <Label>{t('menuBuilder.editItem.itemImage')}</Label>
             <div className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
               <div className="text-gray-500">
                 <Star className="w-8 h-8 mx-auto mb-2" />
-                <p>Image upload coming soon</p>
-                <p className="text-sm">Drag and drop an image here or click to browse</p>
+                <p>{t('menuBuilder.editItem.imageUploadSoon')}</p>
+                <p className="text-sm">{t('menuBuilder.editItem.imageUploadInstructions')}</p>
               </div>
             </div>
           </div>
 
           {/* Recommendations */}
           <div>
-            <Label className="text-base font-medium">Recommended Items</Label>
+            <Label className="text-base font-medium">{t('menuBuilder.editItem.recommendedItems')}</Label>
             <p className="text-sm text-gray-500 mb-4">
-              {item.name === 'New Item' 
-                ? 'Select other menu items to recommend when customers add this item to their cart (save the item first to see recommendations)'
-                : `Select other menu items to recommend when customers add "${item.name}" to their cart`
+              {item.name === 'New Item'
+                ? t('menuBuilder.editItem.recommendationsNewItem')
+                : t('menuBuilder.editItem.recommendationsDescription', { itemName: item.name })
               }
             </p>
             
@@ -156,8 +159,8 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
             {item.name === 'New Item' ? (
               <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                 <Star className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                <p className="font-medium">Save the item first to set recommendations</p>
-                <p className="text-sm">Enter a name and save the item, then edit it again to set recommendations</p>
+                <p className="font-medium">{t('menuBuilder.editItem.saveFirstTitle')}</p>
+                <p className="text-sm">{t('menuBuilder.editItem.saveFirstDescription')}</p>
               </div>
             ) : (() => {
               const realItems = allMenuItems.filter(menuItem => 
@@ -169,8 +172,8 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
             })() ? (
               <div className="text-center py-8 text-gray-500">
                 <Star className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                <p>No other menu items available for recommendations</p>
-                <p className="text-sm text-gray-400 mt-2">Create and save some menu items first to set recommendations</p>
+                <p>{t('menuBuilder.editItem.noItemsAvailable')}</p>
+                <p className="text-sm text-gray-400 mt-2">{t('menuBuilder.editItem.createItemsFirst')}</p>
               </div>
             ) : (
               <div className="space-y-3 max-h-64 overflow-y-auto border rounded-lg p-4">
@@ -203,12 +206,12 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
                           {menuItem.isFeatured && (
                             <Badge className="bg-yellow-100 text-yellow-800 text-xs">
                               <Star className="w-3 h-3 mr-1" />
-                              Featured
+                              {t('menuBuilder.editItem.featured')}
                             </Badge>
                           )}
                           {!menuItem.isAvailable && (
                             <Badge variant="secondary" className="text-xs">
-                              Unavailable
+                              {t('menuBuilder.editItem.unavailable')}
                             </Badge>
                           )}
                         </div>
@@ -219,7 +222,7 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
                           </span>
                           {menuItem.allergens && menuItem.allergens.length > 0 && (
                             <div className="text-xs text-gray-500">
-                              Allergens: {menuItem.allergens.join(', ')}
+                              {t('menuBuilder.editItem.allergens')}: {menuItem.allergens.join(', ')}
                             </div>
                           )}
                         </div>
@@ -234,7 +237,7 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
                 <div className="flex items-center space-x-2 mb-2">
                   <Star className="w-4 h-4 text-blue-600" />
                   <p className="text-sm font-medium text-blue-900">
-                    Selected Recommendations ({selectedRecommendations.length})
+                    {t('menuBuilder.editItem.selectedRecommendations', { count: selectedRecommendations.length })}
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -271,10 +274,10 @@ export function MenuItemDialog({ item, isOpen, onClose, onSave, optionGroups = [
         {/* Actions */}
         <div className="flex justify-end space-x-3 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleSave}>
-            Save Changes
+            {t('menuBuilder.editItem.saveChanges')}
           </Button>
         </div>
       </DialogContent>

@@ -59,6 +59,7 @@ export function AllOrdersList() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [tableTypeFilter, setTableTypeFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [displayLimit, setDisplayLimit] = useState(20);
 
@@ -84,12 +85,16 @@ export function AllOrdersList() {
   }, [user?.uid, currentRestaurant?.id]);
 
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
+    const matchesSearch =
       (order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
       order.tableId.includes(searchTerm) ||
       order.id.includes(searchTerm);
-    
+
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+
+    const matchesTableType = tableTypeFilter === 'all' ||
+      (order as any).tableType === tableTypeFilter ||
+      (tableTypeFilter === 'dine-in' && !(order as any).tableType); // Legacy orders without tableType
     
     const matchesDate = (() => {
       const now = new Date();
@@ -109,7 +114,7 @@ export function AllOrdersList() {
       }
     })();
     
-    return matchesSearch && matchesStatus && matchesDate;
+    return matchesSearch && matchesStatus && matchesTableType && matchesDate;
   }).slice(0, displayLimit);
 
   const updateOrderStatus = (orderId: string, newStatus: Order['status']) => {
@@ -160,6 +165,21 @@ export function AllOrdersList() {
             <SelectItem value="ready">Ready</SelectItem>
             <SelectItem value="delivered">Delivered</SelectItem>
             <SelectItem value="cancelled">Cancelled</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={tableTypeFilter} onValueChange={setTableTypeFilter}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Filter by type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="dine-in">Dine In</SelectItem>
+            <SelectItem value="takeaway">Takeaway</SelectItem>
+            <SelectItem value="grab">Grab</SelectItem>
+            <SelectItem value="shopee">Shopee Food</SelectItem>
+            <SelectItem value="foodpanda">FoodPanda</SelectItem>
+            <SelectItem value="gojek">GoJek</SelectItem>
+            <SelectItem value="custom">Other</SelectItem>
           </SelectContent>
         </Select>
         <Select value={dateFilter} onValueChange={setDateFilter}>
@@ -215,7 +235,8 @@ export function AllOrdersList() {
           </Card>
         ) : (
           filteredOrders.map((order) => {
-            const StatusIcon = statusConfig[order.status].icon;
+            const statusInfo = statusConfig[order.status] || statusConfig.pending;
+            const StatusIcon = statusInfo.icon;
             
             return (
               <Card key={order.id} className="hover:shadow-md transition-shadow">
@@ -228,9 +249,9 @@ export function AllOrdersList() {
                       </CardDescription>
                     </div>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-                      <Badge className={`${statusConfig[order.status].color} text-xs`}>
+                      <Badge className={`${statusInfo.color} text-xs`}>
                         <StatusIcon className="w-3 h-3 mr-1" />
-                        {statusConfig[order.status].label}
+                        {statusInfo.label}
                       </Badge>
                       <Button variant="outline" size="sm" className="w-full sm:w-auto">
                         <Eye className="w-4 h-4 sm:mr-2" />
@@ -282,10 +303,10 @@ export function AllOrdersList() {
                     <div>
                       <h4 className="font-semibold text-gray-900 mb-2">Total</h4>
                       <div className="text-2xl font-bold text-gray-900 mb-2">
-                        ${(order.total + order.tip).toFixed(2)}
+                        ${((order.total || 0) + (order.tip || 0)).toFixed(2)}
                       </div>
                       <div className="text-sm text-gray-500 mb-4">
-                        Subtotal: ${order.total.toFixed(2)} + Tip: ${order.tip.toFixed(2)}
+                        Subtotal: ${(order.total || 0).toFixed(2)} + Tip: ${(order.tip || 0).toFixed(2)}
                       </div>
                       
                       <div className="space-y-2">

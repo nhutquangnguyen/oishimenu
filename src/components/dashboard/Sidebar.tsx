@@ -17,7 +17,9 @@ import {
   Shield,
   ChevronDown,
   X,
-  Languages
+  Languages,
+  Package,
+  DollarSign
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -29,8 +31,9 @@ const getNavigation = (t: (key: string) => string) => [
   { name: t('dashboard.nav.dashboard'), href: '/dashboard', icon: LayoutDashboard },
   { name: t('dashboard.nav.restaurants'), href: '/dashboard/restaurants', icon: Building2 },
   { name: t('dashboard.nav.menuBuilder'), href: '/dashboard/menu', icon: Menu },
-  { name: t('dashboard.nav.pos'), href: '/dashboard/pos', icon: CreditCard },
   { name: t('dashboard.nav.orders'), href: '/dashboard/orders', icon: ShoppingCart },
+  { name: 'Inventory', href: '/dashboard/inventory', icon: Package },
+  { name: 'Money', href: '/dashboard/money', icon: DollarSign },
   { name: t('dashboard.nav.tables'), href: '/dashboard/tables', icon: Table },
   { name: t('dashboard.nav.settings'), href: '/dashboard/settings', icon: Settings },
 ];

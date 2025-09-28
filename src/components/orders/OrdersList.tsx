@@ -43,6 +43,7 @@ export interface OrderItem {
   quantity: number;
   specialInstructions?: string;
   category: string;
+  isCompleted?: boolean; // Track if the item is completed/prepared
 }
 
 const statusConfig = {

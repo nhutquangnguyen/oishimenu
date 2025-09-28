@@ -7,7 +7,7 @@ type Language = 'en' | 'vi';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, variables?: Record<string, string | number>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -391,6 +391,34 @@ const translations = {
     'menuBuilder.brand.contains': 'Contains',
     'menuBuilder.brand.menuFooterText': 'Scan QR code to order • Table service available',
 
+    // Menu Builder - Edit Item Dialog
+    'menuBuilder.editItem.title': 'Edit Menu Item',
+    'menuBuilder.editItem.description': 'Update the details for this menu item.',
+    'menuBuilder.editItem.itemName': 'Item Name',
+    'menuBuilder.editItem.itemNamePlaceholder': 'e.g., Grilled Salmon',
+    'menuBuilder.editItem.descriptionPlaceholder': 'Describe the dish, ingredients, and preparation...',
+    'menuBuilder.editItem.price': 'Price ($)',
+    'menuBuilder.editItem.pricePlaceholder': '0.00',
+    'menuBuilder.editItem.availability': 'Availability',
+    'menuBuilder.editItem.availabilityDescription': 'Make this item available for ordering',
+    'menuBuilder.editItem.featuredItem': 'Featured Item',
+    'menuBuilder.editItem.featuredDescription': 'Highlight this item as a special or popular choice',
+    'menuBuilder.editItem.itemImage': 'Item Image',
+    'menuBuilder.editItem.imageUploadSoon': 'Image upload coming soon',
+    'menuBuilder.editItem.imageUploadInstructions': 'Drag and drop an image here or click to browse',
+    'menuBuilder.editItem.recommendedItems': 'Recommended Items',
+    'menuBuilder.editItem.recommendationsNewItem': 'Select other menu items to recommend when customers add this item to their cart (save the item first to see recommendations)',
+    'menuBuilder.editItem.recommendationsDescription': 'Select other menu items to recommend when customers add "{itemName}" to their cart',
+    'menuBuilder.editItem.saveFirstTitle': 'Save the item first to set recommendations',
+    'menuBuilder.editItem.saveFirstDescription': 'Enter a name and save the item, then edit it again to set recommendations',
+    'menuBuilder.editItem.noItemsAvailable': 'No other menu items available for recommendations',
+    'menuBuilder.editItem.createItemsFirst': 'Create and save some menu items first to set recommendations',
+    'menuBuilder.editItem.featured': 'Featured',
+    'menuBuilder.editItem.unavailable': 'Unavailable',
+    'menuBuilder.editItem.allergens': 'Allergens',
+    'menuBuilder.editItem.selectedRecommendations': 'Selected Recommendations ({count})',
+    'menuBuilder.editItem.saveChanges': 'Save Changes',
+
     // POS System
     'pos.title': 'Point of Sale',
     'pos.description': 'Create orders manually for walk-in customers or phone orders',
@@ -459,6 +487,45 @@ const translations = {
     'orders.time.hoursAgo': '{hours}h ago',
     'orders.time.daysAgo': '{days}d ago',
 
+    // Order Item Management
+    'orders.items.addItem': 'Add Item',
+    'orders.items.addNewItem': 'Add New Item to Order',
+    'orders.items.itemName': 'Item Name',
+    'orders.items.itemNamePlaceholder': 'Enter item name',
+    'orders.items.price': 'Price ($)',
+    'orders.items.pricePlaceholder': '0.00',
+    'orders.items.quantity': 'Quantity',
+    'orders.items.category': 'Category',
+    'orders.items.categoryPlaceholder': 'Category',
+    'orders.items.specialInstructions': 'Special Instructions',
+    'orders.items.specialInstructionsPlaceholder': 'Optional special instructions',
+    'orders.items.adding': 'Adding...',
+    'orders.items.completed': 'Completed',
+    'orders.items.itemsCompleted': '{completed}/{total} Items Completed',
+    'orders.items.noItemsTitle': 'No items in this order',
+    'orders.items.noItemsDescription': 'Items will appear here once added',
+
+    // Order Details Dialog
+    'orders.details.title': 'Order Details',
+    'orders.details.orderInfo': 'Order Information',
+    'orders.details.table': 'Table',
+    'orders.details.customer': 'Customer',
+    'orders.details.status': 'Status',
+    'orders.details.paymentMethod': 'Payment Method',
+    'orders.details.paid': 'Paid',
+    'orders.details.unpaid': 'Unpaid',
+    'orders.details.created': 'Created',
+    'orders.details.lastUpdated': 'Last Updated',
+    'orders.details.notes': 'Notes',
+    'orders.details.orderTotal': 'Order Total',
+    'orders.details.subtotal': 'Subtotal',
+    'orders.details.tip': 'Tip',
+    'orders.details.total': 'Total',
+    'orders.details.orderItems': 'Order Items',
+    'orders.details.close': 'Close',
+    'orders.details.markAsDelivered': 'Mark as Delivered',
+    'orders.details.updating': 'Updating...',
+
     // Tables
     'tables.title': 'Tables',
     'tables.description': 'Manage restaurant seating areas and table layout.',
@@ -511,6 +578,41 @@ const translations = {
     'dashboard.insights.welcome': '📊 Welcome to your restaurant dashboard!',
     'dashboard.insights.addMenu': '🍽️ Add menu items to start receiving orders',
     'dashboard.insights.shareQR': '📱 Share your QR code with customers',
+
+    // Restaurant Removal
+    'restaurant.delete.title': 'Delete Restaurant',
+    'restaurant.delete.confirmTitle': 'Type restaurant name to confirm',
+    'restaurant.delete.confirmDescription': 'You are about to permanently delete {restaurantName} and all associated data.',
+    'restaurant.delete.warningTitle': 'This action cannot be undone.',
+    'restaurant.delete.warningDescription': 'This will permanently delete:',
+    'restaurant.delete.warningList': '• Restaurant information\n• Menu items and categories\n• Table configurations\n• Order history\n• All settings and customizations',
+    'restaurant.delete.confirmPlaceholder': 'Type restaurant name to confirm',
+    'restaurant.delete.deleting': 'Deleting...',
+    'restaurant.delete.button': 'Delete Restaurant',
+    'restaurant.delete.cancel': 'Cancel',
+    'restaurant.dangerZone.title': 'Danger Zone',
+    'restaurant.dangerZone.description': 'Irreversible actions that will permanently affect your restaurant',
+    'restaurant.dangerZone.deleteTitle': 'Delete Restaurant',
+    'restaurant.dangerZone.deleteDescription': 'Permanently delete this restaurant and all associated data. This cannot be undone.',
+    'restaurant.dangerZone.deleteButton': 'Delete',
+
+    // Inventory Workflow
+    'inventory.workflow.title': 'Inventory Workflow',
+    'inventory.workflow.description': 'Streamline your inventory management process',
+    'inventory.workflow.guide.title': 'Smart Inventory Workflow',
+    'inventory.workflow.guide.description': 'Follow these steps to optimize your inventory management',
+    'inventory.workflow.steps.ingredients': 'Manage Ingredients',
+    'inventory.workflow.steps.ingredientsDesc': 'Track and organize your restaurant\'s ingredients',
+    'inventory.workflow.steps.recipes': 'Create Recipes',
+    'inventory.workflow.steps.recipesDesc': 'Define ingredient combinations for menu items',
+    'inventory.workflow.steps.purchases': 'Record Purchases',
+    'inventory.workflow.steps.purchasesDesc': 'Log ingredient purchases and supplier information',
+    'inventory.workflow.steps.tracking': 'Track Usage',
+    'inventory.workflow.steps.trackingDesc': 'Monitor ingredient consumption and stock levels',
+    'inventory.workflow.smartPrompt.needIngredients': 'Create ingredients first to build your inventory foundation',
+    'inventory.workflow.smartPrompt.needRecipes': 'Add recipes to connect ingredients with menu items',
+    'inventory.workflow.smartPrompt.needPurchases': 'Record purchases to track your inventory costs',
+    'inventory.workflow.smartPrompt.complete': 'Your inventory workflow is complete and optimized',
 
     // Footer
     'footer.copyright': '© 2024 OishiMenu. All rights reserved.'
@@ -893,6 +995,34 @@ const translations = {
     'menuBuilder.brand.contains': 'Chứa',
     'menuBuilder.brand.menuFooterText': 'Quét mã QR để đặt món • Có dịch vụ phục vụ bàn',
 
+    // Menu Builder - Edit Item Dialog
+    'menuBuilder.editItem.title': 'Chỉnh sửa món ăn',
+    'menuBuilder.editItem.description': 'Cập nhật thông tin cho món ăn này.',
+    'menuBuilder.editItem.itemName': 'Tên món ăn',
+    'menuBuilder.editItem.itemNamePlaceholder': 'ví dụ: Cá hồi nướng',
+    'menuBuilder.editItem.descriptionPlaceholder': 'Mô tả món ăn, nguyên liệu và cách chế biến...',
+    'menuBuilder.editItem.price': 'Giá ($)',
+    'menuBuilder.editItem.pricePlaceholder': '0.00',
+    'menuBuilder.editItem.availability': 'Tình trạng',
+    'menuBuilder.editItem.availabilityDescription': 'Cho phép món ăn này có thể đặt hàng',
+    'menuBuilder.editItem.featuredItem': 'Món nổi bật',
+    'menuBuilder.editItem.featuredDescription': 'Làm nổi bật món ăn này như món đặc biệt hoặc phổ biến',
+    'menuBuilder.editItem.itemImage': 'Ảnh món ăn',
+    'menuBuilder.editItem.imageUploadSoon': 'Tính năng tải ảnh sắp ra mắt',
+    'menuBuilder.editItem.imageUploadInstructions': 'Kéo thả ảnh vào đây hoặc nhấp để chọn',
+    'menuBuilder.editItem.recommendedItems': 'Món gợi ý',
+    'menuBuilder.editItem.recommendationsNewItem': 'Chọn các món ăn khác để gợi ý khi khách hàng thêm món này vào giỏ hàng (lưu món trước để thấy gợi ý)',
+    'menuBuilder.editItem.recommendationsDescription': 'Chọn các món ăn khác để gợi ý khi khách hàng thêm "{itemName}" vào giỏ hàng',
+    'menuBuilder.editItem.saveFirstTitle': 'Lưu món trước để thiết lập gợi ý',
+    'menuBuilder.editItem.saveFirstDescription': 'Nhập tên và lưu món, sau đó chỉnh sửa lại để thiết lập gợi ý',
+    'menuBuilder.editItem.noItemsAvailable': 'Không có món ăn nào khác để gợi ý',
+    'menuBuilder.editItem.createItemsFirst': 'Tạo và lưu một số món ăn trước để thiết lập gợi ý',
+    'menuBuilder.editItem.featured': 'Nổi bật',
+    'menuBuilder.editItem.unavailable': 'Hết hàng',
+    'menuBuilder.editItem.allergens': 'Chất gây dị ứng',
+    'menuBuilder.editItem.selectedRecommendations': 'Gợi ý đã chọn ({count})',
+    'menuBuilder.editItem.saveChanges': 'Lưu thay đổi',
+
     // POS System
     'pos.title': 'Hệ thống bán hàng',
     'pos.description': 'Tạo đơn hàng thủ công cho khách đi bộ hoặc đặt hàng qua điện thoại',
@@ -961,6 +1091,45 @@ const translations = {
     'orders.time.hoursAgo': '{hours} giờ trước',
     'orders.time.daysAgo': '{days} ngày trước',
 
+    // Order Item Management
+    'orders.items.addItem': 'Thêm món',
+    'orders.items.addNewItem': 'Thêm món mới vào đơn hàng',
+    'orders.items.itemName': 'Tên món',
+    'orders.items.itemNamePlaceholder': 'Nhập tên món',
+    'orders.items.price': 'Giá ($)',
+    'orders.items.pricePlaceholder': '0.00',
+    'orders.items.quantity': 'Số lượng',
+    'orders.items.category': 'Danh mục',
+    'orders.items.categoryPlaceholder': 'Danh mục',
+    'orders.items.specialInstructions': 'Ghi chú đặc biệt',
+    'orders.items.specialInstructionsPlaceholder': 'Ghi chú đặc biệt (tùy chọn)',
+    'orders.items.adding': 'Đang thêm...',
+    'orders.items.completed': 'Hoàn thành',
+    'orders.items.itemsCompleted': '{completed}/{total} món đã hoàn thành',
+    'orders.items.noItemsTitle': 'Không có món nào trong đơn hàng',
+    'orders.items.noItemsDescription': 'Các món sẽ xuất hiện ở đây khi được thêm',
+
+    // Order Details Dialog
+    'orders.details.title': 'Chi tiết đơn hàng',
+    'orders.details.orderInfo': 'Thông tin đơn hàng',
+    'orders.details.table': 'Bàn',
+    'orders.details.customer': 'Khách hàng',
+    'orders.details.status': 'Trạng thái',
+    'orders.details.paymentMethod': 'Phương thức thanh toán',
+    'orders.details.paid': 'Đã thanh toán',
+    'orders.details.unpaid': 'Chưa thanh toán',
+    'orders.details.created': 'Tạo lúc',
+    'orders.details.lastUpdated': 'Cập nhật cuối',
+    'orders.details.notes': 'Ghi chú',
+    'orders.details.orderTotal': 'Tổng đơn hàng',
+    'orders.details.subtotal': 'Tạm tính',
+    'orders.details.tip': 'Tiền tip',
+    'orders.details.total': 'Tổng cộng',
+    'orders.details.orderItems': 'Món trong đơn hàng',
+    'orders.details.close': 'Đóng',
+    'orders.details.markAsDelivered': 'Đánh dấu đã giao',
+    'orders.details.updating': 'Đang cập nhật...',
+
     // Tables
     'tables.title': 'Bàn ăn',
     'tables.description': 'Quản lý khu vực ngồi và bố trí bàn ăn nhà hàng.',
@@ -1014,6 +1183,41 @@ const translations = {
     'dashboard.insights.addMenu': '🍽️ Thêm món ăn để bắt đầu nhận đơn hàng',
     'dashboard.insights.shareQR': '📱 Chia sẻ mã QR với khách hàng',
 
+    // Restaurant Removal
+    'restaurant.delete.title': 'Xóa nhà hàng',
+    'restaurant.delete.confirmTitle': 'Nhập tên nhà hàng để xác nhận',
+    'restaurant.delete.confirmDescription': 'Bạn chuẩn bị xóa vĩnh viễn {restaurantName} và tất cả dữ liệu liên quan.',
+    'restaurant.delete.warningTitle': 'Hành động này không thể hoàn tác.',
+    'restaurant.delete.warningDescription': 'Điều này sẽ xóa vĩnh viễn:',
+    'restaurant.delete.warningList': '• Thông tin nhà hàng\n• Món ăn và danh mục\n• Cấu hình bàn ăn\n• Lịch sử đơn hàng\n• Tất cả cài đặt và tùy chỉnh',
+    'restaurant.delete.confirmPlaceholder': 'Nhập tên nhà hàng để xác nhận',
+    'restaurant.delete.deleting': 'Đang xóa...',
+    'restaurant.delete.button': 'Xóa nhà hàng',
+    'restaurant.delete.cancel': 'Hủy',
+    'restaurant.dangerZone.title': 'Vùng nguy hiểm',
+    'restaurant.dangerZone.description': 'Các hành động không thể hoàn tác sẽ ảnh hưởng vĩnh viễn đến nhà hàng của bạn',
+    'restaurant.dangerZone.deleteTitle': 'Xóa nhà hàng',
+    'restaurant.dangerZone.deleteDescription': 'Xóa vĩnh viễn nhà hàng này và tất cả dữ liệu liên quan. Không thể hoàn tác.',
+    'restaurant.dangerZone.deleteButton': 'Xóa',
+
+    // Inventory Workflow
+    'inventory.workflow.title': 'Quy trình quản lý kho',
+    'inventory.workflow.description': 'Tối ưu hóa quy trình quản lý kho hàng của bạn',
+    'inventory.workflow.guide.title': 'Quy trình kho hàng thông minh',
+    'inventory.workflow.guide.description': 'Làm theo các bước này để tối ưu hóa quản lý kho',
+    'inventory.workflow.steps.ingredients': 'Quản lý nguyên liệu',
+    'inventory.workflow.steps.ingredientsDesc': 'Theo dõi và sắp xếp nguyên liệu nhà hàng',
+    'inventory.workflow.steps.recipes': 'Tạo công thức',
+    'inventory.workflow.steps.recipesDesc': 'Định nghĩa cách kết hợp nguyên liệu cho món ăn',
+    'inventory.workflow.steps.purchases': 'Ghi nhận mua hàng',
+    'inventory.workflow.steps.purchasesDesc': 'Ghi lại việc mua nguyên liệu và thông tin nhà cung cấp',
+    'inventory.workflow.steps.tracking': 'Theo dõi sử dụng',
+    'inventory.workflow.steps.trackingDesc': 'Giám sát việc tiêu thụ nguyên liệu và mức tồn kho',
+    'inventory.workflow.smartPrompt.needIngredients': 'Tạo nguyên liệu trước để xây dựng nền tảng kho hàng',
+    'inventory.workflow.smartPrompt.needRecipes': 'Thêm công thức để kết nối nguyên liệu với món ăn',
+    'inventory.workflow.smartPrompt.needPurchases': 'Ghi nhận mua hàng để theo dõi chi phí kho',
+    'inventory.workflow.smartPrompt.complete': 'Quy trình kho hàng của bạn đã hoàn thiện và tối ưu',
+
     // Footer
     'footer.copyright': '© 2024 OishiMenu. Tất cả quyền được bảo lưu.'
   }
@@ -1035,8 +1239,16 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('language', lang);
   };
 
-  const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations[typeof language]] || key;
+  const t = (key: string, variables?: Record<string, string | number>): string => {
+    let text = translations[language][key as keyof typeof translations[typeof language]] || key;
+
+    if (variables) {
+      Object.entries(variables).forEach(([placeholder, value]) => {
+        text = text.replace(`{${placeholder}}`, String(value));
+      });
+    }
+
+    return text;
   };
 
   return (

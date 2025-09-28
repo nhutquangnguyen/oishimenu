@@ -1,6 +1,5 @@
 'use client';
 
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { PageContent } from '@/components/shared/PageContent';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -185,21 +184,19 @@ export default function DashboardPage() {
 
   if (isDisabled) {
     return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
-              <div className="flex items-center justify-center mb-4">
-                <svg className="h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-red-800 mb-2">Account Disabled</h3>
-              <p className="text-red-700">Your account has been disabled. Please contact support for assistance.</p>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+            <div className="flex items-center justify-center mb-4">
+              <svg className="h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
             </div>
+            <h3 className="text-lg font-semibold text-red-800 mb-2">Account Disabled</h3>
+            <p className="text-red-700">Your account has been disabled. Please contact support for assistance.</p>
           </div>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
@@ -243,32 +240,30 @@ export default function DashboardPage() {
   );
 
   return (
-    <DashboardLayout>
-      <PageContent
-        title={t('dashboard.nav.dashboard')}
-        description={t('dashboard.description')}
-        headerActions={headerActions}
-      >
+    <PageContent
+      title={t('dashboard.nav.dashboard')}
+      description={t('dashboard.description')}
+      headerActions={headerActions}
+    >
 
-        {/* Enhanced Stats Grid with Analytics */}
-        <StatsGrid analytics={analytics} />
+      {/* Enhanced Stats Grid with Analytics */}
+      <StatsGrid analytics={analytics} />
 
-        {/* Quick Actions and Hourly Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-          <QuickActions
-            onAddMenuItem={handleAddMenuItem}
-            onPreviewMenu={handlePreviewMenu}
-            onViewAnalytics={handleViewAnalytics}
-          />
-          <HourlyActivity analytics={analytics} />
-        </div>
+      {/* Quick Actions and Hourly Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+        <QuickActions
+          onAddMenuItem={handleAddMenuItem}
+          onPreviewMenu={handlePreviewMenu}
+          onViewAnalytics={handleViewAnalytics}
+        />
+        <HourlyActivity analytics={analytics} />
+      </div>
 
-        {/* Revenue by Dates */}
-        <RevenueByDates analytics={analytics} />
+      {/* Revenue by Dates */}
+      <RevenueByDates analytics={analytics} />
 
-        {/* Top Menu Items */}
-        <TopMenuItems analytics={analytics} />
-      </PageContent>
-    </DashboardLayout>
+      {/* Top Menu Items */}
+      <TopMenuItems analytics={analytics} />
+    </PageContent>
   );
 }

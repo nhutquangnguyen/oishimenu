@@ -1,20 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { MenuBuilderHeader } from './MenuBuilderHeader';
 import { MenuBuilderTabs } from './MenuBuilderTabs';
 import { useMenuData } from './hooks/useMenuData';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRestaurant } from '@/contexts/RestaurantContext';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, ChefHat, Info } from 'lucide-react';
 import { MenuCategory, MenuItem } from './types';
+import { Recipe } from '../inventory/types';
 import { themes } from './constants';
 import { createSampleMenu } from '@/lib/sample-menu-templates';
+import { getRecipeById } from '@/lib/firestore';
 import QRCode from 'qrcode';
 
 export function MenuBuilderRefactored() {
   const { user } = useAuth();
   const { currentRestaurant } = useRestaurant();
+  const searchParams = useSearchParams();
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>('');
+  const [recipeContext, setRecipeContext] = useState<Recipe | null>(null);
+  const [showRecipePrompt, setShowRecipePrompt] = useState(false);
   
   // Always sync the restaurant ID with the current restaurant
   useEffect(() => {
@@ -33,6 +42,80 @@ export function MenuBuilderRefactored() {
       setSelectedRestaurantId('');
     }
   }, [currentRestaurant?.id, selectedRestaurantId]);
+
+  // Handle recipe context from URL parameters
+  useEffect(() => {
+    const recipeId = searchParams.get('recipeId');
+    const source = searchParams.get('source');
+
+    if (recipeId && source === 'inventory') {
+      // Load recipe data and show integration prompt
+      loadRecipeContext(recipeId);
+    }
+  }, [searchParams]);
+
+  const loadRecipeContext = async (recipeId: string) => {
+    try {
+      const recipe = await getRecipeById(recipeId);
+      if (recipe) {
+        setRecipeContext(recipe);
+        setShowRecipePrompt(true);
+      }
+    } catch (error) {
+      console.error('Error loading recipe context:', error);
+    }
+  };
+
+  const createMenuItemFromRecipe = () => {
+    if (!recipeContext) return;
+
+    // Find or create appropriate category
+    let targetCategory = categories.find(cat => cat.name === recipeContext.category);
+
+    if (!targetCategory) {
+      // Create new category
+      targetCategory = {
+        id: `category-${Date.now()}`,
+        name: recipeContext.category,
+        items: [],
+        order: categories.length,
+        restaurantId: selectedRestaurantId
+      };
+      setCategories([...categories, targetCategory]);
+    }
+
+    // Create new menu item from recipe
+    const newMenuItem: MenuItem = {
+      id: `item-${Date.now()}`,
+      name: recipeContext.menuItemName,
+      description: recipeContext.instructions || `Delicious ${recipeContext.menuItemName}`,
+      price: recipeContext.suggestedPrice,
+      categoryId: targetCategory.id,
+      isAvailable: true,
+      isFeatured: false,
+      order: targetCategory.items.length,
+      restaurantId: selectedRestaurantId
+    };
+
+    // Add item to category
+    const updatedCategories = categories.map(cat => {
+      if (cat.id === targetCategory!.id) {
+        return {
+          ...cat,
+          items: [...cat.items, newMenuItem]
+        };
+      }
+      return cat;
+    });
+
+    setCategories(updatedCategories);
+    markAsChanged();
+    setShowRecipePrompt(false);
+
+    // Update recipe with menu item reference
+    // This would typically involve updating the recipe in the database
+    console.log('Menu item created from recipe:', newMenuItem);
+  };
   
   const {
     categories,
@@ -65,9 +148,14 @@ export function MenuBuilderRefactored() {
   const [isItemDialogOpen, setIsItemDialogOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [allExpanded, setAllExpanded] = useState(false);
+
   // Handle tab change
   const handleTabChange = (newTab: string) => {
     setActiveTab(newTab);
+  };
+
+  const navigateBackToInventory = () => {
+    window.history.back();
   };
 
   const handleDragStart = (event: any) => {
@@ -363,6 +451,43 @@ export function MenuBuilderRefactored() {
 
   return (
     <div className="space-y-6">
+      {/* Recipe Integration Prompt */}
+      {showRecipePrompt && recipeContext && (
+        <Alert className="border-blue-200 bg-blue-50">
+          <ChefHat className="h-4 w-4 text-blue-600" />
+          <div className="ml-2">
+            <h4 className="font-semibold text-blue-900">Create Menu Item from Recipe</h4>
+            <AlertDescription className="text-blue-800 mb-3">
+              Ready to add "{recipeContext.menuItemName}" to your menu with a suggested price of ${recipeContext.suggestedPrice.toFixed(2)}.
+            </AlertDescription>
+            <div className="flex space-x-2">
+              <Button
+                size="sm"
+                onClick={createMenuItemFromRecipe}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Create Menu Item
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={navigateBackToInventory}
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Back to Inventory
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowRecipePrompt(false)}
+              >
+                Dismiss
+              </Button>
+            </div>
+          </div>
+        </Alert>
+      )}
+
       <MenuBuilderHeader
         selectedRestaurantId={selectedRestaurantId}
         onPreviewMenu={handlePreviewMenu}

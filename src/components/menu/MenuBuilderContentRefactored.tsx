@@ -372,14 +372,6 @@ export function MenuBuilderContentRefactored({
         />
       )}
 
-      {/* Debug info */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 right-4 bg-black text-white p-2 text-xs rounded">
-          selectedItem: {selectedItem ? 'Yes' : 'No'}<br/>
-          isItemDialogOpen: {isItemDialogOpen ? 'Yes' : 'No'}<br/>
-          optionGroups: {optionGroups.length}
-        </div>
-      )}
     </>
   );
 }

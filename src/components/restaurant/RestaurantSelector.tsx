@@ -17,10 +17,12 @@ import {
   MapPin,
   Phone,
   Mail,
-  Cog
+  Cog,
+  Trash2
 } from 'lucide-react';
 import { useRestaurant } from '@/contexts/RestaurantContext';
 import { Restaurant } from '@/types/restaurant';
+import { RestaurantDeleteDialog } from './RestaurantDeleteDialog';
 import Link from 'next/link';
 
 export function RestaurantSelector() {
@@ -29,11 +31,13 @@ export function RestaurantSelector() {
     currentRestaurant,
     setCurrentRestaurant,
     createRestaurant,
+    deleteRestaurant,
     loading
   } = useRestaurant();
   const router = useRouter();
 
   const [isCreating, setIsCreating] = useState(false);
+  const [deletingRestaurant, setDeletingRestaurant] = useState<Restaurant | null>(null);
   const [newRestaurant, setNewRestaurant] = useState({
     name: '',
     description: '',
@@ -137,6 +141,19 @@ export function RestaurantSelector() {
                       <Cog className="h-3 w-3" />
                     </Button>
                   </Link>
+                  {restaurants.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeletingRestaurant(restaurant);
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -246,6 +263,16 @@ export function RestaurantSelector() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Delete Restaurant Dialog */}
+      {deletingRestaurant && (
+        <RestaurantDeleteDialog
+          restaurant={deletingRestaurant}
+          isOpen={!!deletingRestaurant}
+          onClose={() => setDeletingRestaurant(null)}
+          onConfirm={deleteRestaurant}
+        />
+      )}
     </div>
   );
 }

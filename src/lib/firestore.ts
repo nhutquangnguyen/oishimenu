@@ -1,20 +1,30 @@
-import { 
-  collection, 
-  doc, 
-  addDoc, 
-  getDocs, 
-  getDoc, 
-  updateDoc, 
+import {
+  collection,
+  doc,
+  addDoc,
+  getDocs,
+  getDoc,
+  updateDoc,
   setDoc,
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
+  deleteDoc,
+  query,
+  where,
+  orderBy,
   limit,
   Timestamp,
-  writeBatch
+  writeBatch,
+  increment
 } from 'firebase/firestore';
 import { db } from './firebase';
+import {
+  Ingredient,
+  Recipe,
+  InventoryTransaction,
+  Purchase,
+  Wallet,
+  InventoryAlert,
+  StockLevel
+} from '@/components/inventory/types';
 
 // Types
 export interface FirestoreOrder {
@@ -41,6 +51,8 @@ export interface FirestoreOrderItem {
   quantity: number;
   specialInstructions?: string | null;
   category: string;
+  isCompleted?: boolean; // Track if the item is completed/prepared
+  completedQuantity?: number; // Track how many of this item are completed (0 to quantity)
 }
 
 export interface FirestoreAnalytics {
@@ -85,6 +97,12 @@ export interface FirestoreAnalytics {
 // Collections
 const ORDERS_COLLECTION = 'orders';
 const ANALYTICS_COLLECTION = 'analytics';
+const INGREDIENTS_COLLECTION = 'ingredients';
+const RECIPES_COLLECTION = 'recipes';
+const INVENTORY_TRANSACTIONS_COLLECTION = 'inventory_transactions';
+const PURCHASES_COLLECTION = 'purchases';
+const WALLETS_COLLECTION = 'wallets';
+const INVENTORY_ALERTS_COLLECTION = 'inventory_alerts';
 
 // Order Functions
 export const createOrder = async (order: Omit<FirestoreOrder, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -181,6 +199,122 @@ export const updateOrderStatus = async (orderId: string, status: FirestoreOrder[
   const orderRef = doc(db, ORDERS_COLLECTION, orderId);
   await updateDoc(orderRef, {
     status,
+    updatedAt: Timestamp.now()
+  });
+};
+
+// Update individual item completion status
+export const updateOrderItemCompletion = async (orderId: string, itemId: string, isCompleted: boolean) => {
+  const orderRef = doc(db, ORDERS_COLLECTION, orderId);
+  const orderDoc = await getDoc(orderRef);
+
+  if (!orderDoc.exists()) {
+    throw new Error('Order not found');
+  }
+
+  const orderData = orderDoc.data() as FirestoreOrder;
+  const updatedItems = orderData.items.map(item => {
+    if (item.id === itemId) {
+      const completedQuantity = isCompleted ? item.quantity : 0;
+      return { ...item, isCompleted, completedQuantity };
+    }
+    return item;
+  });
+
+  await updateDoc(orderRef, {
+    items: updatedItems,
+    updatedAt: Timestamp.now()
+  });
+};
+
+// Update completed quantity for partial completion
+export const updateOrderItemCompletedQuantity = async (orderId: string, itemId: string, completedQuantity: number) => {
+  const orderRef = doc(db, ORDERS_COLLECTION, orderId);
+  const orderDoc = await getDoc(orderRef);
+
+  if (!orderDoc.exists()) {
+    throw new Error('Order not found');
+  }
+
+  const orderData = orderDoc.data() as FirestoreOrder;
+  const updatedItems = orderData.items.map(item => {
+    if (item.id === itemId) {
+      const clampedQuantity = Math.max(0, Math.min(completedQuantity, item.quantity));
+      const isCompleted = clampedQuantity === item.quantity;
+      return { ...item, completedQuantity: clampedQuantity, isCompleted };
+    }
+    return item;
+  });
+
+  await updateDoc(orderRef, {
+    items: updatedItems,
+    updatedAt: Timestamp.now()
+  });
+};
+
+// Add item to existing order
+export const addItemToOrder = async (orderId: string, newItem: FirestoreOrderItem) => {
+  const orderRef = doc(db, ORDERS_COLLECTION, orderId);
+  const orderDoc = await getDoc(orderRef);
+
+  if (!orderDoc.exists()) {
+    throw new Error('Order not found');
+  }
+
+  const orderData = orderDoc.data() as FirestoreOrder;
+  const updatedItems = [...orderData.items, { ...newItem, isCompleted: false }];
+  const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  await updateDoc(orderRef, {
+    items: updatedItems,
+    total: newTotal,
+    updatedAt: Timestamp.now()
+  });
+};
+
+// Remove item from existing order
+export const removeItemFromOrder = async (orderId: string, itemId: string) => {
+  const orderRef = doc(db, ORDERS_COLLECTION, orderId);
+  const orderDoc = await getDoc(orderRef);
+
+  if (!orderDoc.exists()) {
+    throw new Error('Order not found');
+  }
+
+  const orderData = orderDoc.data() as FirestoreOrder;
+  const updatedItems = orderData.items.filter(item => item.id !== itemId);
+  const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  await updateDoc(orderRef, {
+    items: updatedItems,
+    total: newTotal,
+    updatedAt: Timestamp.now()
+  });
+};
+
+// Update item quantity in existing order
+export const updateOrderItemQuantity = async (orderId: string, itemId: string, quantity: number) => {
+  if (quantity <= 0) {
+    await removeItemFromOrder(orderId, itemId);
+    return;
+  }
+
+  const orderRef = doc(db, ORDERS_COLLECTION, orderId);
+  const orderDoc = await getDoc(orderRef);
+
+  if (!orderDoc.exists()) {
+    throw new Error('Order not found');
+  }
+
+  const orderData = orderDoc.data() as FirestoreOrder;
+  const updatedItems = orderData.items.map(item =>
+    item.id === itemId ? { ...item, quantity } : item
+  );
+  const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  await updateDoc(orderRef, {
+    items: updatedItems,
+    total: newTotal,
     updatedAt: Timestamp.now()
   });
 };
@@ -571,4 +705,396 @@ export const generateDemoOrders = async (restaurantId: string, userId: string, u
   
   await batch.commit();
   console.log('Generated 50 demo orders for user:', userId);
+};
+
+// ============= INVENTORY MANAGEMENT FUNCTIONS =============
+
+// Ingredient Functions
+export const createIngredient = async (ingredient: Omit<Ingredient, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const now = new Date();
+  const ingredientData = {
+    ...ingredient,
+    createdAt: Timestamp.fromDate(now),
+    updatedAt: Timestamp.fromDate(now),
+  };
+
+  const docRef = await addDoc(collection(db, INGREDIENTS_COLLECTION), ingredientData);
+  return docRef.id;
+};
+
+export const getIngredientsByRestaurant = async (restaurantId: string): Promise<Ingredient[]> => {
+  const q = query(
+    collection(db, INGREDIENTS_COLLECTION),
+    where('restaurantId', '==', restaurantId),
+    where('isActive', '==', true),
+    orderBy('name')
+  );
+
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt.toDate(),
+    updatedAt: doc.data().updatedAt.toDate(),
+    expiryDate: doc.data().expiryDate ? doc.data().expiryDate.toDate() : undefined,
+  })) as Ingredient[];
+};
+
+export const updateIngredientStock = async (ingredientId: string, newStock: number) => {
+  const ingredientRef = doc(db, INGREDIENTS_COLLECTION, ingredientId);
+  await updateDoc(ingredientRef, {
+    currentStock: newStock,
+    updatedAt: Timestamp.now(),
+  });
+};
+
+export const updateIngredient = async (ingredientId: string, updates: Partial<Ingredient>) => {
+  const ingredientRef = doc(db, INGREDIENTS_COLLECTION, ingredientId);
+  await updateDoc(ingredientRef, {
+    ...updates,
+    updatedAt: Timestamp.now(),
+  });
+};
+
+export const deleteIngredient = async (ingredientId: string) => {
+  const ingredientRef = doc(db, INGREDIENTS_COLLECTION, ingredientId);
+  await updateDoc(ingredientRef, {
+    isActive: false,
+    updatedAt: Timestamp.now(),
+  });
+};
+
+// Recipe Functions
+export const createRecipe = async (recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const now = new Date();
+  const recipeData = {
+    ...recipe,
+    createdAt: Timestamp.fromDate(now),
+    updatedAt: Timestamp.fromDate(now),
+  };
+
+  const docRef = await addDoc(collection(db, RECIPES_COLLECTION), recipeData);
+  return docRef.id;
+};
+
+export const getRecipesByRestaurant = async (restaurantId: string): Promise<Recipe[]> => {
+  const q = query(
+    collection(db, RECIPES_COLLECTION),
+    where('restaurantId', '==', restaurantId),
+    orderBy('menuItemName')
+  );
+
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt.toDate(),
+    updatedAt: doc.data().updatedAt.toDate(),
+  })) as Recipe[];
+};
+
+export const getRecipeById = async (recipeId: string): Promise<Recipe | null> => {
+  try {
+    const recipeRef = doc(db, RECIPES_COLLECTION, recipeId);
+    const recipeDoc = await getDoc(recipeRef);
+
+    if (!recipeDoc.exists()) {
+      return null;
+    }
+
+    return {
+      id: recipeDoc.id,
+      ...recipeDoc.data(),
+      createdAt: recipeDoc.data()?.createdAt.toDate(),
+      updatedAt: recipeDoc.data()?.updatedAt.toDate(),
+    } as Recipe;
+  } catch (error) {
+    console.error('Error getting recipe by ID:', error);
+    return null;
+  }
+};
+
+export const getRecipeByMenuItem = async (menuItemId: string): Promise<Recipe | null> => {
+  const q = query(
+    collection(db, RECIPES_COLLECTION),
+    where('menuItemId', '==', menuItemId),
+    limit(1)
+  );
+
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.empty) return null;
+
+  const doc = querySnapshot.docs[0];
+  return {
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt.toDate(),
+    updatedAt: doc.data().updatedAt.toDate(),
+  } as Recipe;
+};
+
+export const updateRecipe = async (recipeId: string, updates: Partial<Recipe>) => {
+  const recipeRef = doc(db, RECIPES_COLLECTION, recipeId);
+  await updateDoc(recipeRef, {
+    ...updates,
+    updatedAt: Timestamp.now(),
+  });
+};
+
+// Inventory Transaction Functions
+export const createInventoryTransaction = async (
+  transaction: Omit<InventoryTransaction, 'id' | 'createdAt'>
+) => {
+  const transactionData = {
+    ...transaction,
+    createdAt: Timestamp.now(),
+  };
+
+  const docRef = await addDoc(collection(db, INVENTORY_TRANSACTIONS_COLLECTION), transactionData);
+
+  // Update ingredient stock
+  if (transaction.type === 'purchase' || transaction.type === 'adjustment') {
+    const ingredientRef = doc(db, INGREDIENTS_COLLECTION, transaction.ingredientId);
+    await updateDoc(ingredientRef, {
+      currentStock: increment(transaction.quantity),
+      updatedAt: Timestamp.now(),
+    });
+  } else if (transaction.type === 'usage' || transaction.type === 'waste') {
+    const ingredientRef = doc(db, INGREDIENTS_COLLECTION, transaction.ingredientId);
+    await updateDoc(ingredientRef, {
+      currentStock: increment(-Math.abs(transaction.quantity)),
+      updatedAt: Timestamp.now(),
+    });
+  }
+
+  return docRef.id;
+};
+
+export const getInventoryTransactions = async (
+  restaurantId: string,
+  limit_count: number = 50
+): Promise<InventoryTransaction[]> => {
+  const q = query(
+    collection(db, INVENTORY_TRANSACTIONS_COLLECTION),
+    where('restaurantId', '==', restaurantId),
+    orderBy('createdAt', 'desc'),
+    limit(limit_count)
+  );
+
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt.toDate(),
+  })) as InventoryTransaction[];
+};
+
+// Purchase Functions
+export const createPurchase = async (purchase: Omit<Purchase, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const now = new Date();
+  const purchaseData = {
+    ...purchase,
+    createdAt: Timestamp.fromDate(now),
+    updatedAt: Timestamp.fromDate(now),
+  };
+
+  const batch = writeBatch(db);
+
+  // Create purchase record
+  const purchaseRef = doc(collection(db, PURCHASES_COLLECTION));
+  batch.set(purchaseRef, purchaseData);
+
+  // Deduct from wallet
+  const walletRef = doc(db, WALLETS_COLLECTION, `${purchase.restaurantId}_${purchase.walletType}`);
+  batch.update(walletRef, {
+    balance: increment(-purchase.totalCost),
+    lastUpdated: Timestamp.now(),
+  });
+
+  // Create inventory transactions for each item
+  for (const item of purchase.ingredients) {
+    const transactionRef = doc(collection(db, INVENTORY_TRANSACTIONS_COLLECTION));
+    batch.set(transactionRef, {
+      type: 'purchase',
+      ingredientId: item.ingredientId,
+      ingredientName: item.ingredientName,
+      quantity: item.quantity,
+      unit: item.unit,
+      costPerUnit: item.costPerUnit,
+      totalCost: item.totalCost,
+      reason: `Purchase from ${purchase.supplier}`,
+      purchaseId: purchaseRef.id,
+      walletType: purchase.walletType,
+      restaurantId: purchase.restaurantId,
+      userId: purchase.userId,
+      createdAt: Timestamp.now(),
+    });
+
+    // Update ingredient stock
+    const ingredientRef = doc(db, INGREDIENTS_COLLECTION, item.ingredientId);
+    batch.update(ingredientRef, {
+      currentStock: increment(item.quantity),
+      costPerUnit: item.costPerUnit, // Update cost per unit
+      updatedAt: Timestamp.now(),
+    });
+  }
+
+  await batch.commit();
+  return purchaseRef.id;
+};
+
+export const getPurchasesByRestaurant = async (restaurantId: string): Promise<Purchase[]> => {
+  const q = query(
+    collection(db, PURCHASES_COLLECTION),
+    where('restaurantId', '==', restaurantId),
+    orderBy('createdAt', 'desc')
+  );
+
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt.toDate(),
+    updatedAt: doc.data().updatedAt.toDate(),
+    purchaseDate: doc.data().purchaseDate.toDate(),
+    expectedDelivery: doc.data().expectedDelivery ? doc.data().expectedDelivery.toDate() : undefined,
+    actualDelivery: doc.data().actualDelivery ? doc.data().actualDelivery.toDate() : undefined,
+  })) as Purchase[];
+};
+
+// Wallet Functions
+export const getWallet = async (restaurantId: string, type: 'cash' | 'bank'): Promise<Wallet | null> => {
+  const walletId = `${restaurantId}_${type}`;
+  const walletRef = doc(db, WALLETS_COLLECTION, walletId);
+  const walletDoc = await getDoc(walletRef);
+
+  if (!walletDoc.exists()) {
+    // Create wallet if it doesn't exist
+    const newWallet: Wallet = {
+      id: walletId,
+      restaurantId,
+      type,
+      balance: 0,
+      currency: 'USD',
+      lastUpdated: new Date(),
+    };
+
+    await setDoc(walletRef, {
+      ...newWallet,
+      lastUpdated: Timestamp.fromDate(newWallet.lastUpdated),
+    });
+
+    return newWallet;
+  }
+
+  return {
+    id: walletDoc.id,
+    ...walletDoc.data(),
+    lastUpdated: walletDoc.data()?.lastUpdated.toDate(),
+  } as Wallet;
+};
+
+export const updateWalletBalance = async (
+  restaurantId: string,
+  type: 'cash' | 'bank',
+  amount: number
+) => {
+  const walletId = `${restaurantId}_${type}`;
+  const walletRef = doc(db, WALLETS_COLLECTION, walletId);
+
+  await updateDoc(walletRef, {
+    balance: increment(amount),
+    lastUpdated: Timestamp.now(),
+  });
+};
+
+// Stock Level and Alert Functions
+export const getStockLevels = async (restaurantId: string): Promise<StockLevel[]> => {
+  const ingredients = await getIngredientsByRestaurant(restaurantId);
+
+  return ingredients.map(ingredient => {
+    let status: StockLevel['status'] = 'in_stock';
+
+    if (ingredient.currentStock <= 0) {
+      status = 'out_of_stock';
+    } else if (ingredient.currentStock <= ingredient.minStock) {
+      status = 'low_stock';
+    } else if (ingredient.maxStock && ingredient.currentStock >= ingredient.maxStock) {
+      status = 'overstocked';
+    }
+
+    return {
+      ingredientId: ingredient.id,
+      ingredientName: ingredient.name,
+      currentStock: ingredient.currentStock,
+      minStock: ingredient.minStock,
+      maxStock: ingredient.maxStock,
+      unit: ingredient.unit,
+      status,
+    };
+  });
+};
+
+export const createInventoryAlert = async (
+  alert: Omit<InventoryAlert, 'id' | 'createdAt'>
+) => {
+  const alertData = {
+    ...alert,
+    createdAt: Timestamp.now(),
+  };
+
+  const docRef = await addDoc(collection(db, INVENTORY_ALERTS_COLLECTION), alertData);
+  return docRef.id;
+};
+
+export const getInventoryAlerts = async (restaurantId: string): Promise<InventoryAlert[]> => {
+  const q = query(
+    collection(db, INVENTORY_ALERTS_COLLECTION),
+    where('restaurantId', '==', restaurantId),
+    where('isRead', '==', false),
+    orderBy('createdAt', 'desc')
+  );
+
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt.toDate(),
+  })) as InventoryAlert[];
+};
+
+// Usage tracking when orders are completed
+export const trackIngredientUsage = async (orderId: string, restaurantId: string, userId: string) => {
+  // Get the recipe for each order item and deduct ingredient quantities
+  const orderRef = doc(db, ORDERS_COLLECTION, orderId);
+  const orderDoc = await getDoc(orderRef);
+
+  if (!orderDoc.exists()) return;
+
+  const order = orderDoc.data() as FirestoreOrder;
+
+  for (const item of order.items) {
+    const recipe = await getRecipeByMenuItem(item.id);
+    if (!recipe) continue;
+
+    // Create usage transactions for each ingredient in the recipe
+    for (const recipeIngredient of recipe.ingredients) {
+      const usageQuantity = recipeIngredient.quantity * item.quantity;
+
+      await createInventoryTransaction({
+        type: 'usage',
+        ingredientId: recipeIngredient.ingredientId,
+        ingredientName: recipeIngredient.ingredientName,
+        quantity: -usageQuantity, // Negative for usage
+        unit: recipeIngredient.unit,
+        costPerUnit: recipeIngredient.costPerUnit,
+        totalCost: usageQuantity * recipeIngredient.costPerUnit,
+        reason: `Used for order ${orderId} - ${item.name}`,
+        orderId,
+        walletType: 'cash', // Default for usage tracking
+        restaurantId,
+        userId,
+      });
+    }
+  }
 };

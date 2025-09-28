@@ -9,29 +9,35 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Building2, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Clock, 
+import {
+  Building2,
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
   Globe,
   CreditCard,
   Settings,
   Save,
-  Check
+  Check,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 import { useRestaurant } from '@/contexts/RestaurantContext';
 import { Restaurant } from '@/types/restaurant';
+import { RestaurantDeleteDialog } from './RestaurantDeleteDialog';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RestaurantConfigFormProps {
   restaurant: Restaurant;
 }
 
 export function RestaurantConfigForm({ restaurant }: RestaurantConfigFormProps) {
-  const { updateRestaurant } = useRestaurant();
+  const { t } = useLanguage();
+  const { updateRestaurant, deleteRestaurant, restaurants } = useRestaurant();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   const [formData, setFormData] = useState({
     name: restaurant.name || '',
@@ -311,10 +317,43 @@ export function RestaurantConfigForm({ restaurant }: RestaurantConfigFormProps) 
         </CardContent>
       </Card>
 
+      {/* Danger Zone - Only show if user has multiple restaurants */}
+      {restaurants.length > 1 && (
+        <Card className="border-red-200">
+          <CardHeader>
+            <CardTitle className="flex items-center text-red-900">
+              <AlertTriangle className="w-5 h-5 mr-2" />
+              {t('restaurant.dangerZone.title')}
+            </CardTitle>
+            <CardDescription>
+              {t('restaurant.dangerZone.description')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
+              <div>
+                <h4 className="font-medium text-red-900">{t('restaurant.dangerZone.deleteTitle')}</h4>
+                <p className="text-sm text-red-700">
+                  {t('restaurant.dangerZone.deleteDescription')}
+                </p>
+              </div>
+              <Button
+                variant="destructive"
+                onClick={() => setShowDeleteDialog(true)}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {t('restaurant.dangerZone.deleteButton')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button 
-          onClick={handleSave} 
+        <Button
+          onClick={handleSave}
           disabled={isLoading}
           className="min-w-[120px]"
         >
@@ -336,6 +375,14 @@ export function RestaurantConfigForm({ restaurant }: RestaurantConfigFormProps) 
           )}
         </Button>
       </div>
+
+      {/* Delete Restaurant Dialog */}
+      <RestaurantDeleteDialog
+        restaurant={restaurant}
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={deleteRestaurant}
+      />
     </div>
   );
 }

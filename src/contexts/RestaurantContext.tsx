@@ -310,17 +310,99 @@ export function RestaurantProvider({ children }: { children: ReactNode }) {
     if (!user?.uid) throw new Error('User not authenticated');
 
     try {
-      // Note: In a real app, you'd want to also delete all related data (menus, tables, orders, etc.)
-      // For now, we'll just remove the restaurant document
-      const restaurantRef = doc(db, 'restaurants', restaurantId);
-      await setDoc(restaurantRef, { isActive: false }, { merge: true });
+      console.log('🗑️ Deleting restaurant and all related data:', restaurantId);
 
+      // Delete all related data
+      const batch = [];
+
+      // 1. Mark restaurant as deleted (soft delete for audit trail)
+      const restaurantRef = doc(db, 'restaurants', restaurantId);
+      batch.push(setDoc(restaurantRef, {
+        isActive: false,
+        deletedAt: new Date(),
+        deletedBy: user.uid
+      }, { merge: true }));
+
+      // 2. Delete menu data
+      const menuRef = doc(db, 'menus', restaurantId);
+      batch.push(setDoc(menuRef, { isDeleted: true, deletedAt: new Date() }, { merge: true }));
+
+      // 3. Delete tables data
+      const tablesRef = doc(db, 'tables', restaurantId);
+      batch.push(setDoc(tablesRef, { isDeleted: true, deletedAt: new Date() }, { merge: true }));
+
+      // 4. Mark inventory collections as deleted
+      // Note: We use soft delete to preserve data for potential recovery
+      try {
+        // Get and mark ingredients as deleted
+        const ingredientsQuery = query(
+          collection(db, 'ingredients'),
+          where('restaurantId', '==', restaurantId)
+        );
+        const ingredientsSnapshot = await getDocs(ingredientsQuery);
+        ingredientsSnapshot.forEach((doc) => {
+          batch.push(setDoc(doc.ref, { isDeleted: true, deletedAt: new Date() }, { merge: true }));
+        });
+
+        // Get and mark recipes as deleted
+        const recipesQuery = query(
+          collection(db, 'recipes'),
+          where('restaurantId', '==', restaurantId)
+        );
+        const recipesSnapshot = await getDocs(recipesQuery);
+        recipesSnapshot.forEach((doc) => {
+          batch.push(setDoc(doc.ref, { isDeleted: true, deletedAt: new Date() }, { merge: true }));
+        });
+
+        // Get and mark inventory transactions as deleted
+        const transactionsQuery = query(
+          collection(db, 'inventory_transactions'),
+          where('restaurantId', '==', restaurantId)
+        );
+        const transactionsSnapshot = await getDocs(transactionsQuery);
+        transactionsSnapshot.forEach((doc) => {
+          batch.push(setDoc(doc.ref, { isDeleted: true, deletedAt: new Date() }, { merge: true }));
+        });
+
+        // Get and mark purchases as deleted
+        const purchasesQuery = query(
+          collection(db, 'purchases'),
+          where('restaurantId', '==', restaurantId)
+        );
+        const purchasesSnapshot = await getDocs(purchasesQuery);
+        purchasesSnapshot.forEach((doc) => {
+          batch.push(setDoc(doc.ref, { isDeleted: true, deletedAt: new Date() }, { merge: true }));
+        });
+
+        // Get and mark orders as deleted
+        const ordersQuery = query(
+          collection(db, 'orders'),
+          where('restaurantId', '==', restaurantId)
+        );
+        const ordersSnapshot = await getDocs(ordersQuery);
+        ordersSnapshot.forEach((doc) => {
+          batch.push(setDoc(doc.ref, { isDeleted: true, deletedAt: new Date() }, { merge: true }));
+        });
+
+      } catch (dataError) {
+        console.warn('Some related data might not be fully cleaned up:', dataError);
+      }
+
+      // Execute all operations
+      await Promise.all(batch);
+
+      // Update local state
       setRestaurants(prev => prev.filter(restaurant => restaurant.id !== restaurantId));
-      
+
       if (currentRestaurant?.id === restaurantId) {
         const remainingRestaurants = restaurants.filter(r => r.id !== restaurantId);
         setCurrentRestaurantWithPersistence(remainingRestaurants.length > 0 ? remainingRestaurants[0] : null);
       }
+
+      // Clear localStorage for this restaurant
+      localStorage.removeItem(`selectedRestaurant_${user.uid}`);
+
+      console.log('✅ Restaurant and all related data deleted successfully');
     } catch (error) {
       console.error('Error deleting restaurant:', error);
       throw error;
